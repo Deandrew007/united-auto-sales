@@ -26,6 +26,31 @@ def index(path):
     return app.send_static_file('index.html')
 
 
+#-------------------------------------------------------------------------------
+# JONES' SECTION - START
+#-------------------------------------------------------------------------------
+@app.route('/api/cars/<car_id>', methods=['GET'])
+def index(car_id):
+    """
+        Get Details of a specific car.
+    """
+
+    return 0
+
+
+@app.route('/api/cars/<car_id>/favourite', methods=['POST'])
+@login_required
+def followuser(car_id):
+    """
+        Add car to Favourites for logged in user.
+    """
+
+    return 0
+#-------------------------------------------------------------------------------
+# JONES' SECTION - END
+#-------------------------------------------------------------------------------
+
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
