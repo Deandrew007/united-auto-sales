@@ -5,13 +5,14 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app
+from app import app, db
 from flask import render_template, request, redirect, url_for, flash
 from app.models import CarsModel, FavoritesModel, UsersModel
 
 ###
 # Routing for your application.
 ###
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -26,16 +27,31 @@ def index(path):
     return app.send_static_file('index.html')
 
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # JONES' SECTION - START
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 @app.route('/api/cars/<car_id>', methods=['GET'])
 def index(car_id):
     """
         Get Details of a specific car.
     """
 
-    return 0
+    # Convert to integer - just in case
+    car_id = int(car_id)
+
+    # Retrieve Car from the Database
+    requested_car = db.session.query(CarsModel).filter_by(id=car_id).first()
+    # OR - either should work
+    # requested_car = db.session.query(CarsModel).get(car_id)
+
+    # Check to see if the Car was found
+    if (requested_car == None):
+
+        # If Car not found, flash user then redirect
+        flash('Car not found!', category='error')
+        return redirect(url_for('cars'))
+
+    return render_template('car_id.html', car=requested_car)
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
@@ -46,9 +62,9 @@ def followuser(car_id):
     """
 
     return 0
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # JONES' SECTION - END
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 
 ###
@@ -78,4 +94,3 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
-
