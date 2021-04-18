@@ -5,9 +5,10 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request, redirect, url_for, flash
-from app.models import CarsModel, FavoritesModel, UsersModel
+from app import app, db
+from flask import render_template, request, redirect, jsonify,url_for, flash, session, send_from_directory
+from app.models import CarsModel, Favourites, Users
+from werkzeug.utils import secure_filename
 
 ###
 # Routing for your application.
@@ -26,7 +27,43 @@ def index(path):
     return app.send_static_file('index.html')
 
 
-###
+@app.route('/api/users/<user_id>',methods=['GET'])
+def get_user(user_id):
+    user = db.session.query(Users).filter(Users.id==user_id).first()
+    print('User',user)
+    user_details = {
+        "id": user.id,
+        "username": user.username,
+        "name": user.name,
+        "photo": user.photo,
+        "email": user.email,
+        "location": user.location,
+        "biography": user.biography,
+        "date_joined": user.date_joined
+    }
+    return jsonify(user_details), 200
+
+@app.route('/api/users/<user_id>/favourites',methods=['GET'])
+def get_favourites(user_id):
+    favourites = db.session.query(CarsModel).join(Favourites).filter(Favourites.user_id==user_id).all()
+    fav_cars = []
+    for fav_car in favourites:
+        car = {
+            "id": fav_car.id,
+            "description": fav_car.description,
+            "year": fav_car.year,
+            "make": fav_car.make,
+            "model": fav_car.model,
+            "colour": fav_car.colour,
+            "transmission": fav_car.transmission,
+            "car_type": fav_car.car_type,
+            "price": fav_car.price,
+            "photo": fav_car.photo,
+            "user_id": fav_car.user_id
+        }
+        fav_cars.append(car)
+    return jsonify(fav_cars), 200
+
 # The functions below should be applicable to all Flask apps.
 ###
 
