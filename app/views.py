@@ -5,9 +5,11 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
+import os
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash
 from app.models import CarsModel, FavoritesModel, UsersModel
+from flask.helpers import send_from_directory
 
 ###
 # Routing for your application.
@@ -31,7 +33,7 @@ def index(path):
 # JONES' SECTION - START
 # -------------------------------------------------------------------------------
 @app.route('/api/cars/<car_id>', methods=['GET'])
-def index(car_id):
+def get_car(car_id):
     """
         Get Details of a specific car.
     """
@@ -56,12 +58,20 @@ def index(car_id):
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
 @login_required
-def followuser(car_id):
+def favourite_car(car_id):
     """
         Add car to Favourites for logged in user.
     """
 
     return 0
+
+
+# This is needed to retrieve the images from the uploads folder
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    rootdir = os.getcwd()
+    return send_from_directory(os.path.join(rootdir, app.config['UPLOAD_FOLDER']), filename)
+
 # -------------------------------------------------------------------------------
 # JONES' SECTION - END
 # -------------------------------------------------------------------------------

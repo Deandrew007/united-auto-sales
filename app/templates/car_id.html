@@ -1,24 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Details Page - TEST</title>
 
-    <link rel="stylesheet" href="../static/css/car_id.css">
-    <script src="https://kit.fontawesome.com/238a67abd4.js" crossorigin="anonymous"></script>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/car_id.css') }}">
+{% endblock %}
+
+{% block main %}
     <div class="flexing">
         <div class="car-card">
             <div class="car-image">
-                <img src="../static/images/BMW M4 GTS - Test Image.jpg" alt="Image of Car">
+                <!-- <img src="../static/images/Corvette - Test Image.jpg" alt="Image of Car"> -->
+                <img src="{{ url_for('get_image', filename= car.photo) }}" alt="Image of Car">
             </div>
             <div class="car-details">
-                <h1 class="make">2018 Tesla</h1>
-                <h3 class="model">Model S</h3>
-                
+                <h1 class="make">{{ car.make }}</h1>
+                <h3 class="model">{{ car.model }}</h3>
+
                 <p class="details">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam cum corrupti veritatis distinctio qui sed aperiam dolorum, dolore eos, cumque, repudiandae mollitia quisquam omnis quaerat nesciunt. Fuga cumque expedita maiores ullam enim ratione, doloremque omnis suscipit dolore exercitationem fugiat modi impedit aliquam vel repellat voluptas tempore dignissimos aliquid? Nesciunt, expedita.
                 </p>
@@ -26,28 +23,34 @@
                 <div class="other-details">
                     <div class="item">
                         <p class="key">Color</p>
-                        <p class="value">Red</p>
+                        <p class="value">{{ car.color }}</p>
                     </div>
                     <div class="item">
                         <p class="key">Price</p>
-                        <p class="value">$62,888</p>
+                        <p class="value">{{ car.price }}</p>
                     </div>
                     <div class="item">
                         <p class="key">Body Type</p>
-                        <p class="value">Sedan</p>
+                        <p class="value">{{ car.car_type }}</p>
                     </div>
                     <div class="item">
                         <p class="key">Transmission</p>
-                        <p class="value">Automatic</p>
+                        <p class="value">{{ car.transmission }}</p>
                     </div>
                 </div>
 
                 <div class="base">
                     <a href="#" class="email">Email Owner</a>
-                    <i class="far fa-heart"></i>
+                    <!-- <i class="far fa-heart"></i> -->
+                    <a href="{{ url_for('favourite_car', car_id= car.id) }}">
+                        <i class="far fa-heart"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}
+
+{% block js %}
+    <script src="https://kit.fontawesome.com/238a67abd4.js" crossorigin="anonymous"></script>
+{% endblock %}
