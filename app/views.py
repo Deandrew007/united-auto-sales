@@ -10,6 +10,7 @@ from app import app, db
 from flask import render_template, request, redirect, url_for, flash
 from app.models import CarsModel, FavoritesModel, UsersModel
 from flask.helpers import send_from_directory
+from flask_login import current_user, login_user,logout_user
 
 ###
 # Routing for your application.
@@ -63,7 +64,18 @@ def favourite_car(car_id):
         Add car to Favourites for logged in user.
     """
 
-    return 0
+    # Gets the User's ID to make a Fasvourite's object
+    current_user_id =  current_user.id
+
+    # Make Favourite's object
+    favourite = FavoritesModel(car_id, current_user_id)
+
+    # Add to database
+    db.session.add(favourite)
+    db.session.commit()
+    
+    flash('Added to Favourite!', category='success')
+    return redirect(url_for('cars', car_id=car_id))
 
 
 # This is needed to retrieve the images from the uploads folder
