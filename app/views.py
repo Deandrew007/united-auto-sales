@@ -26,6 +26,24 @@ def index(path):
     return app.send_static_file('index.html')
 
 
+@app.route('/api/search',methods=['GET'])
+def search():
+    #CREATE FORM TO SEARCH BY MAKE OR MODEL
+    # searchform = SearchForm()
+    if request.method=="GET":
+        cars=CarsModel.query.filter(CarsModel.make.like('%' + searchform.search.data + "%"))
+        spec_cars=CarsModel.query.filter(CarsModel.model.like('%' + searchform.search.data + "%"))
+
+        if cars!=False:
+            return render_template('search.html',form=searchform, results=cars)
+        
+        elif cars==False and spec_cars!=False:
+            return render_template('search.hmtl',form=searchform, results=spec_cars)
+        
+    return render_template('search.html', form=searchform)
+
+
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
