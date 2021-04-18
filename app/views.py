@@ -10,7 +10,7 @@ from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
-from flask_login import current_user, login_user, logout_user
+# from flask_login import current_user, login_user, logout_user
 
 ###
 # Routing for your application.
@@ -89,24 +89,38 @@ def get_car(car_id):
     # requested_car = db.session.query(CarsModel).get(car_id)
 
     # Check to see if the Car was found
-    if (requested_car == None):
+    # if (requested_car == None):
 
-        # If Car not found, flash user then redirect
-        flash('Car not found!', category='error')
-        return redirect(url_for('cars'))
-
-    return render_template('car_id.html', car=requested_car)
+    #     # If Car not found, flash user then redirect
+    #     flash('Car not found!', category='error')
+    #     return redirect(url_for('cars'))
+    car = {
+        "id": requested_car.id,
+        "description": requested_car.description,
+        "year": requested_car.year,
+        "make": requested_car.make,
+        "model": requested_car.model,
+        "colour": requested_car.colour,
+        "transmission": requested_car.transmission,
+        "car_type": requested_car.car_type,
+        "price": requested_car.price,
+        "photo": requested_car.photo,
+        "user_id": requested_car.user_id
+    }
+    return jsonify(car), 200
+    # render_template('car_id.html', car=requested_car)
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
-@login_required
+# @login_required
 def favourite_car(car_id):
     """
         Add car to Favourites for logged in user.
     """
 
     # Gets the User's ID to make a Fasvourite's object
-    current_user_id = current_user.id
+    # current_user_id = current_user.id
+    current_user_id = 1
 
     # Make Favourite's object
     favourite = Favourites(car_id, current_user_id)
@@ -124,6 +138,12 @@ def favourite_car(car_id):
 def get_image(filename):
     rootdir = os.getcwd()
     return send_from_directory(os.path.join(rootdir, app.config['UPLOAD_FOLDER']), filename)
+
+# user_loader callback. This callback is used to reload the user object from
+# the user ID stored in the session
+# @login_manager.user_loader
+# def load_user(id):
+#     return Users.query.get(int(id))
 
 # -------------------------------------------------------------------------------
 # JONES' SECTION - END
