@@ -89,11 +89,13 @@ def get_car(car_id):
     # requested_car = db.session.query(CarsModel).get(car_id)
 
     # Check to see if the Car was found
-    # if (requested_car == None):
+    if (requested_car == None):
 
-    #     # If Car not found, flash user then redirect
-    #     flash('Car not found!', category='error')
-    #     return redirect(url_for('cars'))
+        # If Car not found, flash user then redirect
+        flash('Car not found!', category='error')
+        return redirect(url_for('cars'))
+
+    # Create new car object
     car = {
         "id": requested_car.id,
         "description": requested_car.description,
@@ -107,6 +109,7 @@ def get_car(car_id):
         "photo": requested_car.photo,
         "user_id": requested_car.user_id
     }
+
     return jsonify(car), 200
     # render_template('car_id.html', car=requested_car)
 
