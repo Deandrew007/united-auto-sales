@@ -38,9 +38,9 @@ def search():
     if request.method=="GET":
         # results = []
         # cars=CarsModel.query.filter(CarsModel.make.like('%' + searchform.search.data + "%"))
-        cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.search.data + "%"))
+        cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
         # spec_cars=CarsModel.query.filter(CarsModel.model.like('%' + searchform.search.data + "%"))
-        spec_car = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.search.data + "%"))
+        spec_car = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
 
         if cars is not None and spec_cars is None:
             for car in cars:
