@@ -5,9 +5,11 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request, redirect, url_for, flash
-from app.models import CarsModel, FavoritesModel, UsersModel
+import os
+from app import app, db
+from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
+from app.models import CarsModel, FavoritesModel, UsersModel as Users
+from werkzeug.utils import *
 
 ###
 # Routing for your application.
@@ -26,23 +28,62 @@ def index(path):
     return app.send_static_file('index.html')
 
 
+""" Javian Anderson Code Begins """
+
 @app.route('/api/search',methods=['GET'])
 def search():
     #CREATE FORM TO SEARCH BY MAKE OR MODEL
     # searchform = SearchForm()
+    results = []
     if request.method=="GET":
-        cars=CarsModel.query.filter(CarsModel.make.like('%' + searchform.search.data + "%"))
-        spec_cars=CarsModel.query.filter(CarsModel.model.like('%' + searchform.search.data + "%"))
+        # results = []
+        # cars=CarsModel.query.filter(CarsModel.make.like('%' + searchform.search.data + "%"))
+        cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.search.data + "%"))
+        # spec_cars=CarsModel.query.filter(CarsModel.model.like('%' + searchform.search.data + "%"))
+        spec_car = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.search.data + "%"))
 
-        if cars!=False:
-            return render_template('search.html',form=searchform, results=cars)
+        if cars is not None and spec_cars is None:
+            for car in cars:
+                car_dets= {
+                    "id": car.id,
+                    "description": car.description,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.colour,
+                    "year": car.year,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(car_dets)
+            return jsonify(results)
+            # return render_template('search.html',form=searchform, results=results)
         
-        elif cars==False and spec_cars!=False:
-            return render_template('search.hmtl',form=searchform, results=spec_cars)
+        elif (cars is None and spec_cars is not None):
+            for car in spec_cars:
+                car_dets= {
+                    "id": car.id,
+                    "description": car.description,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.colour,
+                    "year": car.year,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(car_dets)
+            
+            return jsonify(results)
+            # return render_template('search.hmtl',form=searchform, results=results)
         
-    return render_template('search.html', form=searchform)
+    # return render_template('search.html', form=searchform,  results=results)
 
-
+""" Javian Anderson Code ENDS """
 
 ###
 # The functions below should be applicable to all Flask apps.
