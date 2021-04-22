@@ -31,7 +31,7 @@ const Home = {
   <div class="jumbotron">
   <div class="register-grid">
   <h1>Register New User</h1>
-  <form id="registerUser" enctype="multipart/form-data">
+  <form id="registerForm" enctype="multipart/form-data">
           <div class = "form-grid">
           <div>
               <label for="username" class="form-label">Username</label>
@@ -78,16 +78,57 @@ const Home = {
   return {
 
   }
-  }
+  },
+  methods:{
+      registerUser(){
+          let registerForm = document.getElementById('registerForm');
+          let form_data = new FormData(registerForm);
+
+          fetch('/api/register',{
+              method:'POST',
+              body: form_data,
+              headers:{
+                  'X-CSRFToken': token
+              },
+              credentials: 'same-origin'
+          })
+          .then(function (response) {
+              return response.json();
+          })
+          .then(function (jsonResponse) {
+              // display a success message
+              console.log(jsonResponse);
+          })
+          .catch (function(error){
+              console.log(error);
+          })              
+
+        }
+      }
  };
 
  const Login = {
   name: 'Login',
   template: `
   <div class="jumbotron">
-    <div class="login-grid">
-
-    </div>
+  <div class="login-grid">
+  <h1>Login to your account</h1>
+  <form id="loginUser" enctype="multipart/form-data">
+          <div>
+              <label for="username" class="form-label">Username</label>
+              <br>
+              <input type="text" name="username" id="username" required>
+          </div>
+          <div>
+              <label for="password" class="form-label">Password</label>
+              <br>
+              <input type="password" name="password" id="password" required>
+          </div>
+         <br>
+          <button type="submit" class="btn btn-success">Register</button>
+  </form>
+  
+  </div>
 </div>
   `,
   data() {
