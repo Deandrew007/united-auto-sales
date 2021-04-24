@@ -116,6 +116,7 @@ const Cars = {
             <a href="#" class="email">Email Owner</a>
             <a v-on:click="favouriteCar()">
                 <i class="far fa-heart"></i>
+                <i class="fas fa-heart gone"></i>
             </a>
         </div>
     </div>

@@ -127,7 +127,7 @@ def favourite_car(car_id):
     current_user_id = 1
 
     # Make Favourite's object
-    # favourite = Favourites(car_id, current_user_id)
+    favourite = Favourites(car_id, current_user_id)
     favourite_obj = {
         "car_id": car_id,
         "user_id": 2

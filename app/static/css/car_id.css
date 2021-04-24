@@ -30,6 +30,10 @@
   justify-content: center;
 }
 
+.gone {
+  display: none;
+}
+
 /* Car Card Design */
 .car-card {
   width: 800px;
@@ -90,7 +94,7 @@
 
 .car-details .other-details {
   display: grid;
-  grid-template-columns: repeat(2, minmax(180px, auto));
+  grid-template-columns: repeat(2, minmax(120px, auto));
   grid-template-rows: auto auto;
   grid-template-areas: "item1 item2" "item3 item4";
 }
@@ -125,7 +129,7 @@
   justify-content: space-between;
 }
 
-.car-details > .base a {
+.car-details > .base .email {
   text-decoration: none;
   padding: 10px 15px;
   color: var(--white);
@@ -133,7 +137,7 @@
   border-radius: 5px;
 }
 
-.car-details > .base a:hover {
+.car-details > .base .email:hover {
   opacity: 0.8;
 }
 
