@@ -2,13 +2,10 @@
 
 const app = Vue.createApp({
   data() {
-    return {
-    }
-  },
-  components: {
-    'home': Home,
-    }
+    return {}
+  }
 });
+
 
 const Home = {
   name: 'Home',
