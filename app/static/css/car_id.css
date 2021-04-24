@@ -20,7 +20,7 @@
 
 /* Other Styles */
 /* This is just here so I can see how it looks when centered on the page */
-/* .flexing {
+.flexing {
   min-width: 100vw;
   min-height: 100vh;
   background-color: var(--dark-gray);
@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-} */
+}
 
 /* Car Card Design */
 .car-card {

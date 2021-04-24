@@ -83,11 +83,11 @@ const Cars = {
   `
   <div class="car-card">
     <div class="car-image">
-        <img src="{{ url_for('get_image', filename= car.photo) }}" alt="Image of Car">
+        <img src="{{ url_for('get_image', filename= photo) }}" alt="Image of Car">
     </div>
     <div class="car-details">
-        <h1 class="make">{{ car.make }}</h1>
-        <h3 class="model">{{ car.model }}</h3>
+        <h1 class="make">{{ make }}</h1>
+        <h3 class="model">{{ model }}</h3>
 
         <p class="details">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam cum corrupti veritatis distinctio qui sed aperiam dolorum, dolore eos, cumque, repudiandae mollitia quisquam omnis quaerat nesciunt. Fuga cumque expedita maiores ullam enim ratione, doloremque omnis suscipit dolore exercitationem fugiat modi impedit aliquam vel repellat voluptas tempore dignissimos aliquid? Nesciunt, expedita.
@@ -96,19 +96,19 @@ const Cars = {
         <div class="other-details">
             <div class="item">
                 <p class="key">Color</p>
-                <p class="value">{{ car.colour }}</p>
+                <p class="value">{{ colour }}</p>
             </div>
             <div class="item">
                 <p class="key">Price</p>
-                <p class="value">{{ car.price }}</p>
+                <p class="value">{{ price }}</p>
             </div>
             <div class="item">
                 <p class="key">Body Type</p>
-                <p class="value">{{ car.car_type }}</p>
+                <p class="value">{{ car_type }}</p>
             </div>
             <div class="item">
                 <p class="key">Transmission</p>
-                <p class="value">{{ car.transmission }}</p>
+                <p class="value">{{ transmission }}</p>
             </div>
         </div>
 
@@ -138,29 +138,31 @@ const Cars = {
       }
     })
     .then(function(response) {
+      // Parses the response
       return response.json();
     })
     .then(function(jsonResponse) {
-      // self.id           = jsonResponse.id;
-      // self.description  = jsonResponse.description;
-      // self.year         = jsonResponse.year;
-      // self.make         = jsonResponse.make;
-      // self.model        = jsonResponse.model;
-      // self.colour       = jsonResponse.colour;
-      // self.transmission = jsonResponse.transmission;
-      // self.car_type     = jsonResponse.car_type;
-      // self.price        = jsonResponse.price;
-      // self.photo        = jsonResponse.photo;
-      // self.user_id      = jsonResponse.user_id;
-      console.log(jsonResponse);
+      // Saving the data into SELF/THIS
+      self.id           = jsonResponse.id;
+      self.description  = jsonResponse.description;
+      self.year         = jsonResponse.year;
+      self.make         = jsonResponse.make;
+      self.model        = jsonResponse.model;
+      self.colour       = jsonResponse.colour;
+      self.transmission = jsonResponse.transmission;
+      self.car_type     = jsonResponse.car_type;
+      self.price        = jsonResponse.price;
+      self.photo        = jsonResponse.photo;
+      self.user_id      = jsonResponse.user_id;
+      // console.log(jsonResponse);
     })
     .catch(function(error) {
       console.log(error);
     });
   },
-  data: function() {
+  data() {
     return {
-      "id": this.$route.params.carID,
+      "id": this.$route.params.car_id,
       "description": '',
       "year": '',
       "make": '',
@@ -174,8 +176,10 @@ const Cars = {
     }
   }, 
   methods: {
-    favouriteCar: function(carID, userID) {
-
+    favouriteCar: function() {
+      // Initialize variables
+      carID = this.id;
+      // userID = this.????;
     }
   }
 }

@@ -115,30 +115,30 @@ def get_car(car_id):
     # render_template('car_id.html', car=requested_car)
 
 
-# @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
-# # @login_required
-# def favourite_car(car_id):
-#     """
-#         Add car to Favourites for logged in user.
-#     """
+@app.route('/api/cars/<car_id>/favourite', methods=['POST'])
+# @login_required
+def favourite_car(car_id):
+    """
+        Add car to Favourites for logged in user.
+    """
 
-#     # Gets the User's ID to make a Fasvourite's object
-#     # current_user_id = current_user.id
-#     current_user_id = 1
+    # Gets the User's ID to make a Fasvourite's object
+    # current_user_id = current_user.id
+    current_user_id = 1
 
-#     # Make Favourite's object
-#     # favourite = Favourites(car_id, current_user_id)
-#     favourite_obj = {
-#         "car_id": car_id,
-#         "user_id": 2
-#     }
+    # Make Favourite's object
+    # favourite = Favourites(car_id, current_user_id)
+    favourite_obj = {
+        "car_id": car_id,
+        "user_id": 2
+    }
 
-#     # Add to database
-#     db.session.add(favourite)
-#     db.session.commit()
+    # Add to database
+    db.session.add(favourite)
+    db.session.commit()
 
-#     flash('Added to Favourite!', category='success')
-#     return jsonify(favourite_obj), 200
+    flash('Added to Favourite!', category='success')
+    return jsonify(favourite_obj), 200
     # return redirect(url_for('cars', car_id=car_id))
 
 
