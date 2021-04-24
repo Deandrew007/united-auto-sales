@@ -225,7 +225,7 @@ const Cars = {
         <h3 class="model">{{ model }}</h3>
 
         <p class="details">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam cum corrupti veritatis distinctio qui sed aperiam dolorum, dolore eos, cumque, repudiandae mollitia quisquam omnis quaerat nesciunt. Fuga cumque expedita maiores ullam enim ratione, doloremque omnis suscipit dolore exercitationem fugiat modi impedit aliquam vel repellat voluptas tempore dignissimos aliquid? Nesciunt, expedita.
+          {{ description }}
         </p>
 
         <div class="other-details">
