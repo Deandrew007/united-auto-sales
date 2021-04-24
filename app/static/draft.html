@@ -1,20 +1,40 @@
+{%block main%}
+
 <div class="jumbotron">
-    <div class="login-grid">
-    <h1>Login to your account</h1>
-    <form id="loginUser" enctype="multipart/form-data">
+    <div class="register-grid">
+    <h1>Register New User</h1>
+  
+    <form id="registerForm" action="{{ url_for('register') }}" enctype="multipart/form-data" method="POST">
+            <div class = "form-grid">
             <div>
-                <label for="username" class="form-label">Username</label>
-                <br>
-                <input type="text" name="username" id="username" required>
+                <h6>{{ form.username.label (class="form-label") }} </h6>
+                {{ form.password (class="form-field")}}
             </div>
             <div>
-                <label for="password" class="form-label">Password</label>
-                <br>
-                <input type="password" name="password" id="password" required>
+                <h6>{{ form.password.label (class="form-label") }} </h6>
+                {{ form.password (class="form-field")}}
             </div>
-           <br>
+            </div>
+            <div class = "form-grid">
+                <div>
+                    <h6>{{ form.fullname.label (class="form-label") }} </h6>
+                    {{ form.fullname (class="form-field")}}       
+                </div>
+                <div>
+                    <h6>{{ form.email.label (class="form-label") }} </h6>
+                    {{ form.email (class="form-field")}}
+                </div>
+                </div>
+                <h6>{{ form.location.label (class="form-label") }} </h6>
+                {{ form.location (class="form-field")}}
+                <h6>{{ form.biography.label (class="form-label") }} </h6>
+                {{ form.biography (class="form-field")}}
+                <h6>{{ form.photo.label (class="form-label") }} </h6>
+                {{ form.photo (class="form-field")}}
             <button type="submit" class="btn btn-success">Register</button>
     </form>
     
     </div>
-</div>
+  </div>
+
+  {% endblock %}

@@ -31,7 +31,8 @@ const Home = {
   <div class="jumbotron">
   <div class="register-grid">
   <h1>Register New User</h1>
-  <form id="registerForm" enctype="multipart/form-data">
+
+  <form id="registerForm" enctype="multipart/form-data" @submit.prevent="registerUser">
           <div class = "form-grid">
           <div>
               <label for="username" class="form-label">Username</label>
@@ -96,10 +97,11 @@ const Home = {
               return response.json();
           })
           .then(function (jsonResponse) {
-              // display a success message
-              console.log(jsonResponse);
+              // show success message
+              console.log(jsonResponse.message);
           })
           .catch (function(error){
+              // show error message
               console.log(error);
           })              
 
@@ -138,28 +140,7 @@ const Home = {
   }
  };
 
-const router = VueRouter.createRouter({
-  history: VueRouter.createWebHistory(),
-  routes: [
-  { path: '/', component: Home },
-  { path: '/register', component: Register },
-  { path: '/login', component: Login },
-
-
-  ]
- });
-
-const app = Vue.createApp({
-  data() {
-    return {
-    }
-  },
-  components: {
-    'home': Home,
-    }
-});
-
-app.component('app-header', {
+ app.component('app-header', {
   name: 'AppHeader',
   template: `
   <header>
@@ -201,6 +182,29 @@ app.component('app-footer', {
       }
   }
 })
+
+const router = VueRouter.createRouter({
+  history: VueRouter.createWebHistory(),
+  routes: [
+  { path: '/', component: Home },
+  { path: '/register', component: Register },
+  { path: '/login', component: Login },
+
+
+  ]
+ });
+
+const app = Vue.createApp({
+  data() {
+    return {
+    }
+  },
+  components: {
+    'home': Home,
+    }
+});
+
+
 
 app.use(router)
 app.mount('#app');

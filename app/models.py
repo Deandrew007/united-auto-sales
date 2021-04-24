@@ -44,7 +44,7 @@ class FavoritesModel(db.Model):
     def __repr__(self):
         return '<FavoritesModel %r>' % (self.id)
 
-class UsersModel(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True,  autoincrement=True)
     username = db.Column(db.String(255), unique = True)
     password = db.Column(db.String(255))
