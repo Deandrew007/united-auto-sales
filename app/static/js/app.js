@@ -106,7 +106,13 @@ const Home = {
           })
           .then(function (jsonResponse) {
               // show success message
-              console.log(jsonResponse.message);
+              console.log(jsonResponse);
+              console.log(jsonResponse.register.status);
+              if (jsonResponse.register.status == 200) {
+                router.push('/login');
+              }else {
+                router.push('/home');
+              }
           })
           .catch (function(error){
               // show error message
