@@ -11,6 +11,7 @@ venv/
 
 # PyCharm
 .idea
+__pychache__/
 
 # Pycache
 __pycache__/

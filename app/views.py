@@ -32,17 +32,18 @@ def register():
         filename=secure_filename(photo.filename)
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        data = Users(username, password, fullname, email, location, biography, filename)
+        data = Users(username, password, fullname, location, email, biography, filename)
 
         db.session.add(data)
         db.session.commit()
 
         register={
+            "status": 200,
             "message": fullname + " ,Registered Successfully",
             "username": username
         }
-        return jsonify(register=register), 200
-    return jsonify(errorMsg(form))
+        return jsonify(register=register)
+    #  return jsonify(errorMsg(form))
 
 
 def errorMSg(form):
