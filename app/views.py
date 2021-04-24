@@ -130,7 +130,8 @@ def favourite_car(car_id):
     favourite = Favourites(car_id, current_user_id)
     favourite_obj = {
         "car_id": car_id,
-        "user_id": 2
+        "user_id": 2,
+        "favourite": "YES"
     }
 
     # Add to database

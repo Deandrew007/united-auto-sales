@@ -83,7 +83,7 @@ const Cars = {
   `
   <div class="car-card">
     <div class="car-image">
-        <img v-bind:src="'../static/uploads/' + {{ photo }}" alt="Image of Car">
+        <img v-bind:src="'../static/uploads/' + photo" alt="Image of Car">
     </div>
     <div class="car-details">
         <h1 class="make">{{ make }}</h1>
@@ -179,8 +179,34 @@ const Cars = {
   methods: {
     favouriteCar: function() {
       // Initialize variables
-      carID = this.id;
-      // userID = this.????;
+      let self = this;
+      let carID = self.id; // gets the id
+      // let userID = this.????;
+
+      fetch("/api/cars/" + carID + "/favourite", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': token
+        },
+        credentials: 'same-origin'
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(jsonResponse) {
+        console.log(jsonResponse)
+
+        // Check if the Car was 'favourited'
+        if (jsonResponse.favourite == "YES") {
+          console.log("Yayyy");
+        } else {
+          console.log("Noooo");
+          router.push('/cars/' + jsonResponse.car_id);
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
     }
   }
 }
