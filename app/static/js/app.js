@@ -83,7 +83,7 @@ const Cars = {
   `
   <div class="car-card">
     <div class="car-image">
-        <img src="{{ url_for('get_image', filename= photo) }}" alt="Image of Car">
+        <img v-bind:src="'../static/uploads/' + {{ photo }}" alt="Image of Car">
     </div>
     <div class="car-details">
         <h1 class="make">{{ make }}</h1>
