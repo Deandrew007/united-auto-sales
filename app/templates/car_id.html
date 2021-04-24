@@ -6,49 +6,18 @@
 {% endblock %}
 
 {% block main %}
-    <div class="flexing">
-        <div class="car-card">
-            <div class="car-image">
-                <!-- <img src="../static/images/Corvette - Test Image.jpg" alt="Image of Car"> -->
-                <img src="{{ url_for('get_image', filename= car.photo) }}" alt="Image of Car">
-            </div>
-            <div class="car-details">
-                <h1 class="make">{{ car.make }}</h1>
-                <h3 class="model">{{ car.model }}</h3>
+<div id="app">
+    <app-header></app-header>
 
-                <p class="details">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam cum corrupti veritatis distinctio qui sed aperiam dolorum, dolore eos, cumque, repudiandae mollitia quisquam omnis quaerat nesciunt. Fuga cumque expedita maiores ullam enim ratione, doloremque omnis suscipit dolore exercitationem fugiat modi impedit aliquam vel repellat voluptas tempore dignissimos aliquid? Nesciunt, expedita.
-                </p>
-
-                <div class="other-details">
-                    <div class="item">
-                        <p class="key">Color</p>
-                        <p class="value">{{ car.color }}</p>
-                    </div>
-                    <div class="item">
-                        <p class="key">Price</p>
-                        <p class="value">{{ car.price }}</p>
-                    </div>
-                    <div class="item">
-                        <p class="key">Body Type</p>
-                        <p class="value">{{ car.car_type }}</p>
-                    </div>
-                    <div class="item">
-                        <p class="key">Transmission</p>
-                        <p class="value">{{ car.transmission }}</p>
-                    </div>
-                </div>
-
-                <div class="base">
-                    <a href="#" class="email">Email Owner</a>
-                    <!-- <i class="far fa-heart"></i> -->
-                    <a href="{{ url_for('favourite_car', car_id= car.id) }}">
-                        <i class="far fa-heart"></i>
-                    </a>
-                </div>
-            </div>
+    <main>
+        <div class="container">
+            <!-- component matched by the route will render here -->
+            <router-view></router-view>
         </div>
-    </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>
 {% endblock %}
 
 {% block js %}
