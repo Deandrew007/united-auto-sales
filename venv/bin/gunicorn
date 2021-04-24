@@ -1,12 +1,10 @@
-#!/home/deandrew/Desktop/2nd_sem_2021/Info3180_web_dev2/united-auto-sales/venv/bin/python3
-# EASY-INSTALL-ENTRY-SCRIPT: 'gunicorn==20.1.0','console_scripts','gunicorn'
-__requires__ = 'gunicorn==20.1.0'
+#!/bin/sh
+'''exec' "/mnt/c/Users/malik/OneDrive/YEAR 3 COURSES/Semester 2/INFO3180/Projects/united-auto-sales/venv/bin/python3" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
 import re
 import sys
-from pkg_resources import load_entry_point
-
+from gunicorn.app.wsgiapp import run
 if __name__ == '__main__':
-    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(
-        load_entry_point('gunicorn==20.1.0', 'console_scripts', 'gunicorn')()
-    )
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(run())

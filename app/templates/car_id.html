@@ -1,0 +1,25 @@
+
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/car_id.css') }}">
+{% endblock %}
+
+{% block main %}
+<div id="app">
+    <app-header></app-header>
+
+    <main>
+        <div class="container">
+            <!-- component matched by the route will render here -->
+            <router-view></router-view>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://kit.fontawesome.com/238a67abd4.js" crossorigin="anonymous"></script>
+{% endblock %}
