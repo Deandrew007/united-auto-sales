@@ -56,7 +56,6 @@ class Favourites(db.Model):
     def __repr__(self):
         return '<Favourites %r>' % (self.id)
 
-
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True,  autoincrement=True)
     username = db.Column(db.String(255), unique=True)

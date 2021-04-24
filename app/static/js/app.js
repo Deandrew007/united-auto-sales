@@ -1,33 +1,178 @@
 /* Add your Application JavaScript */
-// Instantiate our main Vue Instance
+
 const app = Vue.createApp({
   data() {
     return {}
   }
 });
 
-app.component('app-header', {
+
+const Home = {
+  name: 'Home',
+  template: `
+  <div class="home-grid">
+  <div class="home-text-section">
+      <h1>Buy and Sell Cars Online</h1>
+      <p>United Auto Sales provides the fastest easiest and most user friendly way to buy and sell cars online.
+      Find a Great Price on the Vehicle You Want.</p>
+    
+      <button class="btn btn-primary mb-2" @click="$router.push('register')">Register</button>
+      
+      <button class="btn btn-success mb-2"  @click="$router.push('login')" >Login</button>
+     
+  </div>
+
+  <img class="home-image" src="../static/images/car.png" alt="Car Image">
+
+</div>
+  `,
+  data() {
+  return {
+
+  }
+  }
+ };
+
+ const Register = {
+  name: 'Register',
+  template: `
+  <div class="jumbotron">
+  <div class="register-grid">
+  <h1>Register New User</h1>
+
+  <form id="registerForm" enctype="multipart/form-data" @submit.prevent="registerUser">
+          <div class = "form-grid">
+          <div>
+              <label for="username" class="form-label">Username</label>
+              <br>
+              <input type="text" name="username" id="username" required>
+          </div>
+          <div>
+              <label for="password" class="form-label">Password</label>
+              <br>
+              <input type="password" name="password" id="password" required>
+          </div>
+          </div>
+          <div class = "form-grid">
+              <div>
+                  <label for="fullname" class="form-label">Fullname</label>
+                  <br>
+                  <input type="text" name="fullname" id="fullname" required>        
+              </div>
+              <div>
+                  <label for="email" class="form-label">Email</label>
+                  <br>
+                  <input type="email" name="email" id="email" required>        
+              </div>
+              </div>
+          <label for="location" class="form-label">Location</label>
+          <br>
+          <input type="text" name="location" id="location" required>
+          <br>
+          <label for="Biography" class="form-label">Biography</label>
+          <br>
+          <textarea class="form-control" name="biography"></textarea>
+          <br>
+          <label for="photo" class="form-label">Upload Photo</label>
+          <br>
+          <input type="file" name="photo" class="form-control">
+          <br>
+          <button type="submit" class="btn btn-success">Register</button>
+  </form>
+  
+  </div>
+</div>
+  `,
+  data() {
+  return {
+
+  }
+  },
+  methods:{
+      registerUser(){
+          let registerForm = document.getElementById('registerForm');
+          let form_data = new FormData(registerForm);
+
+          fetch('/api/register',{
+              method:'POST',
+              body: form_data,
+              headers:{
+                  'X-CSRFToken': token
+              },
+              credentials: 'same-origin'
+          })
+          .then(function (response) {
+              return response.json();
+          })
+          .then(function (jsonResponse) {
+              // show success message
+              console.log(jsonResponse.message);
+          })
+          .catch (function(error){
+              // show error message
+              console.log(error);
+          })              
+
+        }
+      }
+ };
+
+ const Login = {
+  name: 'Login',
+  template: `
+  <div class="jumbotron">
+  <div class="login-grid">
+  <h1>Login to your account</h1>
+  <form id="loginUser" enctype="multipart/form-data">
+          <div>
+              <label for="username" class="form-label">Username</label>
+              <br>
+              <input type="text" name="username" id="username" required>
+          </div>
+          <div>
+              <label for="password" class="form-label">Password</label>
+              <br>
+              <input type="password" name="password" id="password" required>
+          </div>
+         <br>
+          <button type="submit" class="btn btn-success">Register</button>
+  </form>
+  
+  </div>
+</div>
+  `,
+  data() {
+  return {
+
+  }
+  }
+ };
+
+ app.component('app-header', {
   name: 'AppHeader',
-  template: 
-  `
+  template: `
+  <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-    <a class="navbar-brand" href="#">Lab 7</a>
+    <a class="navbar-brand" href="/">United Auto Sales</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
+          <router-link to="/register" class="nav-link">Register</router-link>
         </li>
-        <li class="nav-item active">
-          <router-link class="nav-link" to="/upload">Upload <span class="sr-only">(current)</span></router-link>
+        <li class="nav-item">
+          <router-link to="/login" class="nav-link">Login</router-link>
         </li>
       </ul>
     </div>
   </nav>
-  `
+</header>    
+  `,
+  data: function() {
+    return {};
+  }
 });
 
 app.component('app-footer', {
@@ -46,22 +191,6 @@ app.component('app-footer', {
     }
   }
 });
-
-const Home = {
-  name: 'Home',
-  template: 
-  `
-  <div class="jumbotron">
-      <h1>Lab 7</h1>
-      <p class="lead">
-        In this lab we will demonstrate VueJS working with Forms and Form Validation from Flask-WTF.
-      </p>
-  </div>
-  `,
-  data() {
-    return {}
-  }
-};
 
 const NotFound = {
   name: 'NotFound',
@@ -216,6 +345,10 @@ const Cars = {
 const routes = [
   { path: "/", component: Home },
   // Put other routes here
+  { path: '/register', component: Register },
+
+  { path: '/login', component: Login },
+
   { path: "/cars/:car_id", component: Cars },
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }

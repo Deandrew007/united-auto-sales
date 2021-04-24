@@ -10,12 +10,53 @@ from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
+from .forms import RegisterForm
 # from flask_login import current_user, login_user, logout_user
 
 ###
 # Routing for your application.
 ###
 
+@app.route('/api/register',methods=['POST'])
+def register():
+    form= RegisterForm()
+    if request.method=='POST' and form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        fullname = form.fullname.data
+        email = form.email.data
+        location = form.location.data
+        biography = form.biography.data  
+        photo = form.photo.data
+
+        filename=secure_filename(photo.filename)
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        data = Users(username, password, fullname, email, location, biography, filename)
+
+        db.session.add(data)
+        db.session.commit()
+
+        register={
+            "message": fullname + " ,Registered Successfully",
+            "username": username
+        }
+        return jsonify(register=register), 200
+    return jsonify(errorMsg(form))
+
+
+def errorMSg(form):
+    errorMessages = []
+   
+    for field, errors in form.errors.items():
+        for error in errors:
+            message = u"You have an error in %s field, %s" % (
+                    getattr(form, field).label.text,
+                    error
+                )
+            errorMessages.append(message)
+
+    return errorMessages
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
