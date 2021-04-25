@@ -10,7 +10,7 @@ from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
-from .forms import RegisterForm
+from .forms import RegisterForm, AddForm
 # from flask_login import current_user, login_user, logout_user
 
 ###
@@ -201,6 +201,33 @@ def get_image(filename):
 # JONES' SECTION - END
 # -------------------------------------------------------------------------------
 
+@app.route('/api/cars', methods=['POST'])
+#@login_required
+def addvehicle(car_id):
+    form = AddForm()
+    token = request.headers['Authorization'].split()[1]
+    #current_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['asdfghjkl'])['id']
+    if request.method == 'POST' and form.validate_on_submit():
+        make= form.make.data
+        model= form.model.data
+        colour=form.colour.data
+        year=form.year.data
+        price=form.price.data
+        car_type=form.car_type.data
+        transmission=form.transmission.data
+        description=form.description.data
+        photo = form.photo.data
+        filename = photo.filename
+        photo.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], filename
+        ))
+          
+        # addcar = Addcars(car_id, filename, caption)
+        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, photo, 1)
+
+        db.session.add(addcar)
+        db.session.commit()
+        return jsonify({'message': 'Car sucessfully added!'}),200
 
 ###
 # The functions below should be applicable to all Flask apps.
