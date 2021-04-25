@@ -28,5 +28,5 @@ class AddForm(FlaskForm):
     photo = FileField('Profile Photo', validators=[FileRequired(), FileAllowed(["jpg","png"],"Images only!")])
 
 class SearchForm(FlaskForm):
-    make = StringField('Make', [validators.Required("(Required)")])
-    model  = StringField('Model', [validators.Required("(Required)")])
+    make = StringField('Make', validators=[DataRequired()])
+    model  = StringField('Model', validators=[DataRequired()])
