@@ -6,10 +6,10 @@ Thumbs.db
 *$py.class
 
 # virtualenv
-.venv/
-venv/
 .venv1/
 venv1/
+.venv/
+venv/
 
 # PyCharm
 .idea
