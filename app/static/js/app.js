@@ -1,8 +1,16 @@
+import {UserProfile} from '../views/UserProfile.js';
 /* Add your Application JavaScript */
 
 const app = Vue.createApp({
   data() {
-    return {}
+    return {
+      tasks: [],
+      token: "",
+      result: {},
+      error: false,
+      user_id: ''      
+    }
+
   }
 });
 
@@ -168,16 +176,35 @@ const Home = {
         <li class="nav-item active">
           <router-link to="/register" class="nav-link">Register</router-link>
         </li>
+        <li class="nav-item active">
+          <router-link to="/users/{{jwtData.id}}" class="nav-link">My Profile</router-link>
+        </li>
         <li class="nav-item">
-          <router-link to="/login" class="nav-link">Login</router-link>
+          <router-link to="/login/" class="nav-link">Login</router-link>
         </li>
       </ul>
     </div>
   </nav>
 </header>    
   `,
+  created: function(){
+    let self = this;
+
+    localStorage.getItem('token')
+  },
   data: function() {
-    return {};
+    return {
+      user_id: ''
+    };
+  },
+  computed: {
+    // this.jwtData will update whenever this.jwt changes.
+    jwtData() {
+      // JWT's are two base64-encoded JSON objects and a trailing signature
+      // joined by periods. The middle section is the data payload.
+      if (localStorage.getItem('token')) return JSON.parse(atob(this.jwt.split('.')[1]));
+      return {};
+    }
   }
 });
 
@@ -432,6 +459,8 @@ const routes = [
   { path: '/login', component: Login },
 
   { path: "/cars/:car_id", component: Cars },
+
+  { path: "/users/:user_id", component: UserProfile},
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
 ];

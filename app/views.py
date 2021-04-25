@@ -7,15 +7,70 @@ This file creates your application.
 
 import os
 from app import app, db
-from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
+from flask import render_template, request, redirect, jsonify, url_for,\
+                flash, session, send_from_directory, make_response, g
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
 from .forms import RegisterForm, AddForm
+# Using JWT
+import jwt
+from flask import _request_ctx_stack
+from functools import wraps
+import datetime
+
 # from flask_login import current_user, login_user, logout_user
+# Create a JWT @requires_auth decorator
+# This decorator can be used to denote that a specific route should check
+# for a valid JWT token before displaying the contents of that route.
+def requires_auth(f):
+  @wraps(f)
+  def decorated(*args, **kwargs):
+    auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
+
+    if not auth:
+      return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
+
+    parts = auth.split()
+
+    if parts[0].lower() != 'bearer':
+      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
+    elif len(parts) == 1:
+      return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
+    elif len(parts) > 2:
+      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
+
+    token = parts[1]
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
+    except jwt.DecodeError:
+        return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
+
+    g.current_user = user = payload
+    return f(*args, **kwargs)
+
+  return decorated
 
 ###
 # Routing for your application.
 ###
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    """
+    Because we use HTML5 history mode in vue-router we need to configure our
+    web server to redirect all routes to index.html. Hence the additional route
+    "/<path:path".
+
+    Also we will render the initial webpage and then let VueJS take control.
+    """
+    # return app.send_static_file('index.html')
+    return render_template('index.html')
+
 
 @app.route('/api/register',methods=['POST'])
 def register():
@@ -46,34 +101,8 @@ def register():
     #  return jsonify(errorMsg(form))
 
 
-def errorMSg(form):
-    errorMessages = []
-   
-    for field, errors in form.errors.items():
-        for error in errors:
-            message = u"You have an error in %s field, %s" % (
-                    getattr(form, field).label.text,
-                    error
-                )
-            errorMessages.append(message)
-
-    return errorMessages
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    """
-    Because we use HTML5 history mode in vue-router we need to configure our
-    web server to redirect all routes to index.html. Hence the additional route
-    "/<path:path".
-
-    Also we will render the initial webpage and then let VueJS take control.
-    """
-    # return app.send_static_file('index.html')
-    return render_template('index.html')
-
-
 @app.route('/api/users/<user_id>', methods=['GET'])
+@requires_auth
 def get_user(user_id):
     user = db.session.query(Users).filter(Users.id == user_id).first()
     print('User', user)
@@ -91,6 +120,7 @@ def get_user(user_id):
 
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
+@requires_auth
 def get_favourites(user_id):
     favourites = db.session.query(CarsModel).join(
         Favourites).filter(Favourites.user_id == user_id).all()
@@ -118,6 +148,7 @@ def get_favourites(user_id):
 
 
 @app.route('/api/cars/<car_id>', methods=['GET'])
+@requires_auth
 def get_car(car_id):
     """
         Get Details of a specific car.
@@ -158,7 +189,7 @@ def get_car(car_id):
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
-# @login_required
+@requires_auth
 def favourite_car(car_id):
     """
         Add car to Favourites for logged in user.
@@ -202,7 +233,7 @@ def get_image(filename):
 # -------------------------------------------------------------------------------
 
 @app.route('/api/cars', methods=['POST'])
-#@login_required
+@requires_auth
 def addvehicle(car_id):
     form = AddForm()
     token = request.headers['Authorization'].split()[1]
@@ -232,6 +263,18 @@ def addvehicle(car_id):
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+def errorMSg(form):
+    errorMessages = []
+   
+    for field, errors in form.errors.items():
+        for error in errors:
+            message = u"You have an error in %s field, %s" % (
+                    getattr(form, field).label.text,
+                    error
+                )
+            errorMessages.append(message)
+
+    return errorMessages
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):
