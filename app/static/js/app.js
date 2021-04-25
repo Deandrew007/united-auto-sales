@@ -2,11 +2,36 @@
 const app = Vue.createApp({
   data() {
     return {
-      welcome: 'Hello World! Welcome to VueJS'
     }
   }
 });
 
+const Home = {
+  name: 'Home',
+  template: `
+  <div class="home-grid">
+  <div class="home-text-section">
+      <h1>Buy and Sell Cars Online</h1>
+      <p>United Auto Sales provides the fastest easiest and most user friendly way to buy and sell cars online.
+      Find a Great Price on the Vehicle You Want.</p>
+    
+      <button class="btn btn-primary mb-2" @click="$router.push('register')">Register</button>
+      
+      <button class="btn btn-success mb-2"  @click="$router.push('login')" >Login</button>
+     
+  </div>
+
+  <img class="home-image" src="../static/images/car.png" alt="Car Image">
+
+</div>
+  `,
+  data() {
+  return {
+
+  }
+  }
+ };
+ 
 app.component('app-header', {
   name: 'AppHeader',
   template: `
@@ -50,7 +75,7 @@ app.component('app-footer', {
 const Explore = Vue.component('explore',{
   template:
   `
-  <form id="registerForm" enctype="multipart/form-data" @submit.prevent="registerUser">
+  <form id="searchForm" enctype="multipart/form-data" @submit.prevent="searchAll">
   <div class = "form-grid">
     <div>
         <label for="username" class="form-label">Username</label>
@@ -66,8 +91,8 @@ const Explore = Vue.component('explore',{
   </form>
   <div>
         <ul class="main">
-            {% for car in results %}
-            <li>
+         <!-- {% for car in results %} --!>
+            <li v-for="car in results">
                 <div class="card" style="width:18rem;">
                     <img src="" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -83,38 +108,42 @@ const Explore = Vue.component('explore',{
     </div>
   
   `,
-  data:function(){
-    return {
-      results =[]
-    };
-  },
-  created:function(){
-    let self = this;
+  methods:{
+    Search :function(){
+      let self = this;
+            
+      let SearchForm = document.getElementById('searchForm');
+      let form_data = new FormData(SearchForm);  
+      fetch('/api/search',{
+        method:'GET',
+        body: form_data
+        // headers: 
+      })
+      .then(function(response){
+        return response.json();
+        // response = response.json();
+        // data = response.json();
+        // this.results =data;
+      })
+      .then(function(jsonResponse){
+        self.results = jsonResponse;
+      });
+    }
+  
+    },
+    data : function(){
+      return{
+        results=[]
+      }
 
-    fetch('/api/search',{
-      method:'GET',
-      body:{}
-      // headers: 
-    })
-    .then(function(response){
-      response = response.json();
-      // data = response.json();
-      this.results =data;
-    })
-
-  }
+    }
+  
 
 });
 
 
 // Define Routes
-const router = new VueRouter({
-  data: function(){
-    return {
-      userid : null
-    }
-  },
-  
+const router = new VueRouter({  
   routes: [
       {path: "/explore", component: Explore}
   ]
