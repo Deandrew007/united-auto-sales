@@ -15,6 +15,11 @@ class RegisterForm(FlaskForm):
     biography =TextAreaField('Biography',validators=[DataRequired()])   
     photo = FileField('Photo',validators=[FileRequired(), FileAllowed(['jpg','png'])])
 
+class LoginForm(FlaskForm):
+    csrf = CSRFProtect(app)
+    username = TextField('Username',validators=[DataRequired()])   
+    password = PasswordField('Password',validators=[DataRequired()])   
+
 # Abby Form
 class AddForm(FlaskForm):
     make = StringField('make', validators=[DataRequired()])

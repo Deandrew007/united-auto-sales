@@ -9,6 +9,8 @@ Flask-Migrate
 Flask-Script
 Flask-Login
 psycopg2
+pyjwt
+flask_login
 # ----------------------
 # Production Server
 # ----------------------

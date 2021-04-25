@@ -129,7 +129,7 @@ const Home = {
   <div class="jumbotron">
   <div class="login-grid">
   <h1>Login to your account</h1>
-  <form id="loginUser" enctype="multipart/form-data">
+  <form id="loginForm" enctype="multipart/form-data" @submit.prevent="loginUser">
           <div>
               <label for="username" class="form-label">Username</label>
               <br>
@@ -151,6 +151,39 @@ const Home = {
   return {
 
   }
+  },
+  loginUser(){
+    let loginForm = document.getElementById('loginForm');
+    let form_data = new FormData(loginForm);
+
+    fetch('/api/login',{
+        method:'POST',
+        body: form_data,
+        headers:{
+            'X-CSRFToken': token
+        },
+        credentials: 'same-origin'
+    })
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (jsonResponse) {
+        // show success message
+        console.log(jsonResponse);
+        console.log(jsonResponse.status);
+        if (jsonResponse.status == 200) {
+          console.log(jsonResponse)
+          // router.push('');
+        }else if(jsonResponse.status == 401) {
+          console.log(jsonResponse)
+          // router.push('');
+        }
+    })
+    .catch (function(error){
+        // show error message
+        console.log(error);
+    })              
+
   }
  };
 

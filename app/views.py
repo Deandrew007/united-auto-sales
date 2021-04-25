@@ -6,16 +6,42 @@ This file creates your application.
 """
 
 import os
-from app import app, db
+from app import app, db, login_manager
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
-from .forms import RegisterForm, AddForm
-# from flask_login import current_user, login_user, logout_user
+from .forms import RegisterForm, AddForm, LoginForm
+import jwt
+from flask_login import current_user, login_user, logout_user
+from flask_login import LoginManager
 
 ###
 # Routing for your application.
 ###
+
+@login_manager.user_loader
+@app.route('/login', methods=['POST'])
+def login():
+    if current_user.is_authenticated:
+        alreadyLoggedIn = {
+            "status": 200,
+        }
+        return jsonify(alreadyLoggedIn = alreadyLoggedIn)
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+
+            return jsonify({"status": 401, "data": "Username not found"})
+        login_user(user, remember=form.remember_me.data)
+        return jsonify({"status": 200, "user": user.to_json})
+ 
+@app.route('/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return jsonify({'result': 200,
+                      'data': 'logout success'})
 
 @app.route('/api/register',methods=['POST'])
 def register():
@@ -39,8 +65,9 @@ def register():
 
         register={
             "status": 200,
-            "message": fullname + " ,Registered Successfully",
-            "username": username
+            "fullname": fullname,
+            "username": username,
+            "jwt": jwt
         }
         return jsonify(register=register)
     #  return jsonify(errorMsg(form))
@@ -58,6 +85,10 @@ def errorMSg(form):
             errorMessages.append(message)
 
     return errorMessages
+
+def getJWT():
+    return jwt.encode({'project2': 'payload'}, 'secret', algorithm='HS256')
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
