@@ -51,4 +51,23 @@ app.component('app-footer', {
   }
 })
 
+const Explore = Vue.component('explore',{
+
+});
+
+
+// Define Routes
+const router = new VueRouter({
+  data: function(){
+    return {
+      userid : null
+    }
+  },
+  
+  routes: [
+      {path: "/explore", component: Explore}
+  ]
+});
+
+
 app.mount('#app');
