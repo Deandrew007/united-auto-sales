@@ -425,22 +425,29 @@ const AddCar = {
   }
 };
 
-const Explore = Vue.component('explore',{
+const Explore = {
+  name: 'explore',
   template:
   `
   <form id="searchForm" enctype="multipart/form-data" @submit.prevent="searchAll">
   <div class = "form-grid">
     <div>
-        <label for="username" class="form-label">Username</label>
+        <label for="make" class="form-label">Search By Make</label>
         <br>
-        <input type="text" name="username" id="username" required>
+        
+        <input type="text" name="make" id="make" required>
+    </div>
+    <br>
+    <div>
+    <h1> OR </h1>
     </div>
     <div>
-      <label for="username" class="form-label">Username</label>
+      <label for="model" class="form-label">Search By Model</label>
       <br>
-      <input type="text" name="username" id="username" required>
+      <input type="text" name="model" id="model" required>
     </div>
     </div>
+    <button type="submit" class="btn btn-primary">Search</button>
   </form>
   <div>
         <ul class="main">
@@ -455,7 +462,6 @@ const Explore = Vue.component('explore',{
                     </div>
                 </div>
             </li>
-            {% endfor %}
         </ul>
         
     </div>
@@ -486,13 +492,13 @@ const Explore = Vue.component('explore',{
     },
     data : function(){
       return{
-        results=[]
+        results:[]
       }
 
     }
   
 
-});
+};
 
 // Define Routes
 const routes = [
