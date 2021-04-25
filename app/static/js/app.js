@@ -391,7 +391,7 @@ const AddCar = {
                 <input type="text" name="price" id="price" required>
             </div>
             <div>
-                <label for="car_type" class="form-label">Car Type</label>
+                <label for="car_type" class="form-menu">Car Type</label>
                 <select name="car_type" id="car_type">
                   <option value="SUV">SUV</option>
                   <option value="Sedan">Sedan</option>
@@ -401,10 +401,11 @@ const AddCar = {
              
             </div>
             </div>
-          <label for="transmission" class="form-label">Transmission</label>
-
-          <br>
-          <input type="text" name="transmission" id="transmission" required>
+          <label for="transmission" class="form-menu">Transmission</label>
+          <select name= "transmission" id="transmission">
+          <option value="Automatic">Automatic</option>
+          <option value="Manual">Manual</option> 
+          </select>
           <br>
           <label for="description" class="form-label">Description</label>
           <br>
