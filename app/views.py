@@ -20,6 +20,9 @@ from flask_login import LoginManager
 ###
 
 @login_manager.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
+
 @app.route('/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
@@ -29,7 +32,7 @@ def login():
         return jsonify(alreadyLoggedIn = alreadyLoggedIn)
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = Users.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
 

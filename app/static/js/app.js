@@ -141,7 +141,7 @@ const Home = {
               <input type="password" name="password" id="password" required>
           </div>
          <br>
-          <button type="submit" class="btn btn-success">Register</button>
+          <button type="submit" class="btn btn-success">Login</button>
   </form>
   
   </div>
