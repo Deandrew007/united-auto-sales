@@ -8,6 +8,8 @@ Thumbs.db
 # virtualenv
 .venv/
 venv/
+.venv1/
+venv1/
 
 # PyCharm
 .idea

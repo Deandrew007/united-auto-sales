@@ -10,7 +10,7 @@ from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
-from .forms import RegisterForm, AddForm
+from .forms import RegisterForm, AddForm, SearchForm
 # from flask_login import current_user, login_user, logout_user
 
 ###
@@ -228,6 +228,36 @@ def addvehicle(car_id):
         db.session.add(addcar)
         db.session.commit()
         return jsonify({'message': 'Car sucessfully added!'}),200
+
+
+""" Javian Anderson Code Begins """
+
+@app.route('/api/search',methods=['GET'])
+def search():
+    #CREATE FORM TO SEARCH BY MAKE OR MODEL
+    searchform = SearchForm()
+    results = []
+    if request.method=="GET":
+        # results = []
+        # Make Query
+        cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
+        # Model Query
+        spec_cars = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
+
+        if cars is not None and spec_cars is None:
+            for car in cars:
+                results.append(car)
+            return jsonify(results)
+            
+        
+        elif (cars is None and spec_cars is not None):
+            for car in spec_cars:
+                results.append(car)
+            return jsonify(results)
+        
+    return jsonify_errors(form_errors(searchform))
+
+""" Javian Anderson Code ENDS """
 
 ###
 # The functions below should be applicable to all Flask apps.

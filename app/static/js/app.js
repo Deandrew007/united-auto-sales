@@ -19,6 +19,8 @@ const Home = {
       <button class="btn btn-primary mb-2" @click="$router.push('register')">Register</button>
       
       <button class="btn btn-success mb-2"  @click="$router.push('login')" >Login</button>
+
+      <button class="btn btn-success mb-2"  @click="$router.push('explore')" >Explore</button>
      
   </div>
 
@@ -171,6 +173,9 @@ const Home = {
         <li class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/explore" class="nav-link">Explore</router-link>
+        </li>
       </ul>
     </div>
   </nav>
@@ -182,19 +187,17 @@ const Home = {
 });
 
 app.component('app-footer', {
-  name: 'AppFooter',
-  template: 
-  `
-  <footer>
-    <div class="container">
-      <p>Copyright &copy; {{ year }} Flask Inc.</p>
-    </div>
-  </footer>
+  template: `
+      <footer>
+          <div class="container">
+              <p>Copyright &copy {{ year }} United Auto Sales</p>
+          </div>
+      </footer>
   `,
-  data() {
-    return {
-      year: (new Date).getFullYear()
-    }
+  data: function() {
+      return {
+          year: (new Date).getFullYear()
+      };
   }
 });
 
@@ -422,6 +425,74 @@ const AddCar = {
   }
 };
 
+const Explore = Vue.component('explore',{
+  template:
+  `
+  <form id="searchForm" enctype="multipart/form-data" @submit.prevent="searchAll">
+  <div class = "form-grid">
+    <div>
+        <label for="username" class="form-label">Username</label>
+        <br>
+        <input type="text" name="username" id="username" required>
+    </div>
+    <div>
+      <label for="username" class="form-label">Username</label>
+      <br>
+      <input type="text" name="username" id="username" required>
+    </div>
+    </div>
+  </form>
+  <div>
+        <ul class="main">
+         <!-- {% for car in results %} --!>
+            <li v-for="car in results">
+                <div class="card" style="width:18rem;">
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h4 class="card-title">Car Make is {{ car.make }} and Car Model is {{ car.model }}</h4>
+                        <p class="card-text"> {{ car.description }} </p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        
+    </div>
+  
+  `,
+  methods:{
+    Search :function(){
+      let self = this;
+            
+      let SearchForm = document.getElementById('searchForm');
+      let form_data = new FormData(SearchForm);  
+      fetch('/api/search',{
+        method:'GET',
+        body: form_data
+        // headers: 
+      })
+      .then(function(response){
+        return response.json();
+        // response = response.json();
+        // data = response.json();
+        // this.results =data;
+      })
+      .then(function(jsonResponse){
+        self.results = jsonResponse;
+      });
+    }
+  
+    },
+    data : function(){
+      return{
+        results=[]
+      }
+
+    }
+  
+
+});
 
 // Define Routes
 const routes = [
@@ -432,6 +503,8 @@ const routes = [
   { path: '/login', component: Login },
 
   { path: "/cars/:car_id", component: Cars },
+
+  {path: "/explore", component: Explore},
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
 ];

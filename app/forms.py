@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, TextField, FileField, SelectField
-from wtforms.validators import InputRequired, DataRequired
+from wtforms.validators import InputRequired, DataRequired,Required
 from flask_wtf.csrf import CSRFProtect
 from app import app
 from flask_wtf.file import FileField, FileRequired, FileAllowed
@@ -26,3 +26,7 @@ class AddForm(FlaskForm):
     transmission = SelectField('Transmissions', choices=[("Automatic","Automatic"),("Manual","Manual")])
     description = TextAreaField('description', validators=[DataRequired()])
     photo = FileField('Profile Photo', validators=[FileRequired(), FileAllowed(["jpg","png"],"Images only!")])
+
+class SearchForm(FlaskForm):
+    make = StringField('Make', [validators.Required("(Required)")])
+    model  = StringField('Model', [validators.Required("(Required)")])
