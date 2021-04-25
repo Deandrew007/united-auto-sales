@@ -87,7 +87,7 @@ const Register = {
 
         <input type="file" name="photo" class="form-control">
         <br>
-        
+
         <button type="submit" class="btn btn-success">Register</button>
       </form>
   
@@ -230,7 +230,7 @@ const Cars = {
   `
   <div class="car-card">
     <div class="car-image">
-      <img v-bind:src="'../static/uploads/' + photo" alt="Image of Car">
+      <img v-bind:src="'./uploads/' + photo" alt="Image of Car">
     </div>
     <div class="car-details">
       <h1 class="make">{{ make }}</h1>
@@ -260,16 +260,24 @@ const Cars = {
       </div>
 
       <div class="base">
+        <p v-if="isFavourited">TESTING</p>
         <a href="#" class="email">Email Owner</a>
-        <a v-on:click="favouriteCar()">
-          <i class="far fa-heart"></i>
-          <i class="fas fa-heart gone"></i>
-        </a>
+        <div class="hearts">
+          <a class="fav-heart" v-on:click="favouriteCar()" v-if="isFavourited">
+            <i class="fas fa-heart"></i>
+          </a>
+          <a class="fav-heart" v-on:click="favouriteCar()" v-else>
+            <i class="far fa-heart"></i>
+          </a>
+        </div>
       </div>
     </div>
   </div>
   `,
   created: function() {
+    // Call the Favourite function on start up
+    // this.favouriteCar(); // Should check if the car was favourited
+
     let self = this;
     let carID = self.id; // gets the id
 
@@ -288,11 +296,21 @@ const Cars = {
     .then(function(response) {
       // Parses the response from   { {JSON object}, status-number }
       //                      E.g.  { {car_type: Type R}, 200 }
+      let self = this;
+      self.car_status = response.status; // Stores the status
+
       return response.json();
     })
     .then(function(jsonResponse) {
       // Saving the data into SELF/THIS
       // Further parsing of the JSON object happens here.
+
+      if (car_status == 200) {
+        self.isFavourited = false;
+      } else {
+        self.isFavourited = true;
+      }
+      
       self.id           = jsonResponse.id;
       self.description  = jsonResponse.description;
       self.year         = jsonResponse.year;
@@ -304,7 +322,9 @@ const Cars = {
       self.price        = jsonResponse.price;
       self.photo        = jsonResponse.photo;
       self.user_id      = jsonResponse.user_id;
-      // console.log(jsonResponse);
+      self.status       = jsonResponse.status;
+
+      console.log(jsonResponse);
     })
     .catch(function(error) {
       // Logs/Prints the error
@@ -313,17 +333,18 @@ const Cars = {
   },
   data() {
     return {
-      "id": this.$route.params.car_id,
-      "description": '',
-      "year": '',
-      "make": '',
-      "model": '',
-      "colour": '',
-      "transmission": '',
-      "car_type": '',
-      "price": '',
-      "photo": '',
-      "user_id": ''
+      id: this.$route.params.car_id,
+      description: '',
+      year: '',
+      make: '',
+      model: '',
+      colour: '',
+      transmission: '',
+      car_type: '',
+      price: '',
+      photo: '',
+      user_id: ''
+      ,isFavourited: false
     }
   }, 
   methods: {
@@ -341,17 +362,27 @@ const Cars = {
         credentials: 'same-origin'
       })
       .then(function(response) {
+        // console.log("RESPONSE " + response.status)
+        let self = this;
+        self.fav_status = response.status; // Stores the status
+
         return response.json();
       })
       .then(function(jsonResponse) {
-        console.log(jsonResponse)
-
         // Check if the Car was 'favourited'
-        if (jsonResponse.favourite == "YES") {
-          console.log("Yayyy");
+        if (fav_status == 200) {
+          // If Yes, change the class of the icon to a filled heart
+          self.isFavourited = true;
+
+          // Output a message and refresh the page
+          console.log("Favourited-" + status + " for Car: " + jsonResponse.car_id + ", by User: " + jsonResponse.user_id);
         } else {
-          console.log("Noooo");
-          router.push('/cars/' + jsonResponse.car_id);
+          // If No, change the class of the icon to an un-filled heart
+          self.isFavourited = false;
+
+          // Output a message and refresh the page
+          console.log("Not Favourited-" + status + " for Car: " + jsonResponse.car_id + ", by User: " + jsonResponse.user_id);
+          // router.push('/cars/' + jsonResponse.car_id);
         }
       })
       .catch(function(error) {
@@ -363,6 +394,36 @@ const Cars = {
 /*-------------------------------------------------------------------------------*/
 // JONES' SECTION - END
 /*-------------------------------------------------------------------------------*/
+
+
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - START
+/*-------------------------------------------------------------------------------*/
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - END
+/*-------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - START
+/*-------------------------------------------------------------------------------*/
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - END
+/*-------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - START
+/*-------------------------------------------------------------------------------*/
+
+/*-------------------------------------------------------------------------------*/
+// OTHER SECTION - END
+/*-------------------------------------------------------------------------------*/
+
+
 
 /*-------------------------------------------------------------------------------*/
 // ROUTE & ROUTER SECTION - START

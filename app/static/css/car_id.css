@@ -30,10 +30,6 @@
   justify-content: center;
 }
 
-.gone {
-  display: none;
-}
-
 /* Car Card Design */
 .car-card {
   width: 800px;
@@ -141,13 +137,22 @@
   opacity: 0.8;
 }
 
-.car-details > .base i {
+.hearts {
   margin-right: 20px;
+  cursor: pointer;
+  width: fit-content;
+  height: fit-content;
+}
+
+.car-details > .base .fav-heart i {
   padding: 10px;
   border: solid 1px var(--dark-gray);
   border-radius: 50%;
   color: #ff0000;
-  cursor: pointer;
+}
+
+.gone {
+  display: none;
 }
 
 /* Media Queries */

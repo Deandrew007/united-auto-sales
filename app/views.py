@@ -152,6 +152,18 @@ def get_car(car_id):
         "user_id": requested_car.user_id
     }
 
+    # Gets the User's ID to make a Fasvourite's object
+    # current_user_id = current_user.id
+    current_user_id = 2 #TODO: Find a way to get the current User ID
+
+    # Retrieves a Favourite from the Database with the matching Car ID
+    requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
+
+    # Check to see if the Favourite was found
+    if (requested_fav != None):
+        # If found, send 401
+        return jsonify(car), 401
+
     return jsonify(car), 200
     # render_template('car_id.html', car=requested_car)
 
@@ -165,15 +177,29 @@ def favourite_car(car_id):
 
     # Gets the User's ID to make a Fasvourite's object
     # current_user_id = current_user.id
-    current_user_id = 1
+    current_user_id = 2 #TODO: Find a way to get the current User ID
 
-    # Make Favourite's object
-    favourite = Favourites(car_id, current_user_id)
+    # Retrieves a Favourite from the Database with the matching Car ID
+    requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
+    # print("Favourited? - " , requested_fav)
+
+    # Created the Favourite JSON object
     favourite_obj = {
         "car_id": car_id,
-        "user_id": 2,
-        "favourite": "YES"
+        "user_id": current_user_id
     }
+
+    # Check to see if the Favourite was found
+    if (requested_fav != None):
+        # If found, delete it
+        # TODO: Add delete query here
+        db.session.delete(requested_fav)
+        db.session.commit()
+
+        return jsonify(favourite_obj), 401
+
+    # Make Favourite's object for database
+    favourite = Favourites(car_id, current_user_id)
 
     # Add to database
     db.session.add(favourite)
