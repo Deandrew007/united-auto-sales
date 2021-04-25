@@ -20,10 +20,7 @@ app.component('app-header', {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">News</a>
+                  <router-link class="nav-link" to="/explore">Explore<span class="sr-only">(current)</span></router-link>
                 </li>
               </ul>
             </div>
@@ -36,22 +33,62 @@ app.component('app-header', {
 });
 
 app.component('app-footer', {
-  name: 'AppFooter',
   template: `
       <footer>
           <div class="container">
-              <p>Copyright &copy {{ year }} Flask Inc.</p>
+              <p>Copyright &copy {{ year }} United Auto Sales</p>
           </div>
       </footer>
   `,
   data: function() {
       return {
           year: (new Date).getFullYear()
-      }
+      };
   }
-})
+});
 
 const Explore = Vue.component('explore',{
+  template:
+  `
+  <div>
+        <ul class="main">
+            {% for car in results %}
+            <li>
+                <div class="card" style="width:18rem;">
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h4 class="card-title">Car Make is {{ car.make }} and Car Model is {{ car.model }}</h4>
+                        <p class="card-text"> {{ car.description }} </p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        
+    </div>
+  
+  `,
+  data:function(){
+    return {
+      results =[]
+    };
+  },
+  created:function(){
+    let self = this;
+
+    fetch('/api/search',{
+      method:'GET',
+      body:{}
+      // headers: 
+    })
+    .then(function(response){
+      response = response.json();
+      // data = response.json();
+      this.results =data;
+    })
+
+  }
 
 });
 

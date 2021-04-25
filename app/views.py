@@ -9,7 +9,8 @@ import os
 from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, FavoritesModel, UsersModel as Users
-from werkzeug.utils import *
+from .forms import SearchForm
+# from werkzeug.utils import *
 
 ###
 # Routing for your application.
@@ -33,55 +34,27 @@ def index(path):
 @app.route('/api/search',methods=['GET'])
 def search():
     #CREATE FORM TO SEARCH BY MAKE OR MODEL
-    # searchform = SearchForm()
+    searchform = SearchForm()
     results = []
     if request.method=="GET":
         # results = []
-        # cars=CarsModel.query.filter(CarsModel.make.like('%' + searchform.search.data + "%"))
+        # Make Query
         cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
-        # spec_cars=CarsModel.query.filter(CarsModel.model.like('%' + searchform.search.data + "%"))
-        spec_car = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
+        # Model Query
+        spec_cars = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
 
         if cars is not None and spec_cars is None:
             for car in cars:
-                car_dets= {
-                    "id": car.id,
-                    "description": car.description,
-                    "make": car.make,
-                    "model": car.model,
-                    "colour": car.colour,
-                    "year": car.year,
-                    "transmission": car.transmission,
-                    "car_type": car.car_type,
-                    "price": car.price,
-                    "photo": car.photo,
-                    "user_id": car.user_id
-                }
-                results.append(car_dets)
+                results.append(car)
             return jsonify(results)
-            # return render_template('search.html',form=searchform, results=results)
+            
         
         elif (cars is None and spec_cars is not None):
             for car in spec_cars:
-                car_dets= {
-                    "id": car.id,
-                    "description": car.description,
-                    "make": car.make,
-                    "model": car.model,
-                    "colour": car.colour,
-                    "year": car.year,
-                    "transmission": car.transmission,
-                    "car_type": car.car_type,
-                    "price": car.price,
-                    "photo": car.photo,
-                    "user_id": car.user_id
-                }
-                results.append(car_dets)
-            
+                results.append(car)
             return jsonify(results)
-            # return render_template('search.hmtl',form=searchform, results=results)
         
-    # return render_template('search.html', form=searchform,  results=results)
+    return jsonify_errors(form_errors(searchform))
 
 """ Javian Anderson Code ENDS """
 

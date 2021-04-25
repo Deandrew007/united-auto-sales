@@ -2,6 +2,12 @@ body {
     padding-top: 5rem;
 }
 
+.main{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(3,1fr);
+}
+
 footer  {
     padding-top: 20px;
 }

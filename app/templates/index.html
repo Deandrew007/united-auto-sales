@@ -7,10 +7,30 @@
     <main>
         <div class="container">
             <!-- component matched by the route will render here -->
-            <router-view :key="$route.fullPath"></router-view>
+            <!-- <router-view :key="$route.fullPath"></router-view> -->
+            <router-view></router-view>
         </div>
     </main>
+
+    <!-- <div>
+        <ul class="main">
+            {% for car in results %}
+            <li>
+                <div class="card" style="width:18rem;">
+                    <img src="" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h4 class="card-title">Car Make is {{ car.make }} and Car Model is {{ car.model }}</h4>
+                        <p class="card-text"> {{ car.description }} </p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        
+    </div> -->
 
     <app-footer></app-footer>
 </div>
 {% endblock %}
+
