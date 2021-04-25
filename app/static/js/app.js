@@ -50,6 +50,20 @@ app.component('app-footer', {
 const Explore = Vue.component('explore',{
   template:
   `
+  <form id="registerForm" enctype="multipart/form-data" @submit.prevent="registerUser">
+  <div class = "form-grid">
+    <div>
+        <label for="username" class="form-label">Username</label>
+        <br>
+        <input type="text" name="username" id="username" required>
+    </div>
+    <div>
+      <label for="username" class="form-label">Username</label>
+      <br>
+      <input type="text" name="username" id="username" required>
+    </div>
+    </div>
+  </form>
   <div>
         <ul class="main">
             {% for car in results %}
