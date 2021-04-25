@@ -17,9 +17,14 @@ from .forms import RegisterForm
 # Routing for your application.
 ###
 
-@app.route('/api/register',methods=['POST'])
+# -------------------------------------------------------------------------------
+# DEANDREW SECTION - START
+# -------------------------------------------------------------------------------
+@app.route('/api/register', methods=['POST'])
 def register():
+
     form= RegisterForm()
+
     if request.method=='POST' and form.validate_on_submit():
         username = form.username.data
         password = form.password.data
@@ -37,46 +42,30 @@ def register():
         db.session.add(data)
         db.session.commit()
 
-        register={
+        register = {
             "status": 200,
-            "message": fullname + " ,Registered Successfully",
+            "message": fullname + ", Registered Successfully",
             "username": username
         }
+
         return jsonify(register=register)
     #  return jsonify(errorMsg(form))
+# -------------------------------------------------------------------------------
+# DEANDREW SECTION - END
+# -------------------------------------------------------------------------------
 
 
-def errorMSg(form):
-    errorMessages = []
-   
-    for field, errors in form.errors.items():
-        for error in errors:
-            message = u"You have an error in %s field, %s" % (
-                    getattr(form, field).label.text,
-                    error
-                )
-            errorMessages.append(message)
-
-    return errorMessages
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    """
-    Because we use HTML5 history mode in vue-router we need to configure our
-    web server to redirect all routes to index.html. Hence the additional route
-    "/<path:path".
-
-    Also we will render the initial webpage and then let VueJS take control.
-    """
-    # return app.send_static_file('index.html')
-    return render_template('index.html')
-
-
+# -------------------------------------------------------------------------------
+# EDWARDS' SECTION - START
+# -------------------------------------------------------------------------------
 @app.route('/api/users/<user_id>', methods=['GET'])
 def get_user(user_id):
+
+    # Retrieves a User from the Database with the matching User ID
     user = db.session.query(Users).filter(Users.id == user_id).first()
+
     print('User', user)
+    #TODO: Might want to check if the User was actually found
     user_details = {
         "id": user.id,
         "username": user.username,
@@ -87,14 +76,19 @@ def get_user(user_id):
         "biography": user.biography,
         "date_joined": user.date_joined
     }
+
     return jsonify(user_details), 200
 
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
 def get_favourites(user_id):
-    favourites = db.session.query(CarsModel).join(
-        Favourites).filter(Favourites.user_id == user_id).all()
-    fav_cars = []
+
+    # Gets all the cars favourited by the 'current' user
+    favourites = db.session.query(CarsModel).join(Favourites).filter(Favourites.user_id == user_id).all()
+    
+    fav_cars = [] # Stores all the cars as JSON objects
+
+    # Adds all JSON Car-objects to the list
     for fav_car in favourites:
         car = {
             "id": fav_car.id,
@@ -110,12 +104,17 @@ def get_favourites(user_id):
             "user_id": fav_car.user_id
         }
         fav_cars.append(car)
+
     return jsonify(fav_cars), 200
+
+# -------------------------------------------------------------------------------
+# EDWARDS' SECTION - END
+# -------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------
 # JONES' SECTION - START
 # -------------------------------------------------------------------------------
-
 
 @app.route('/api/cars/<car_id>', methods=['GET'])
 def get_car(car_id):
@@ -126,7 +125,7 @@ def get_car(car_id):
     # Convert to integer - just in case
     car_id = int(car_id)
 
-    # Retrieve Car from the Database
+    # Retrieves a Car from the Database with the matching Car ID
     requested_car = db.session.query(CarsModel).filter_by(id=car_id).first()
     # OR - either should work
     # requested_car = db.session.query(CarsModel).get(car_id)
@@ -136,7 +135,7 @@ def get_car(car_id):
 
         # If Car not found, flash user then redirect
         flash('Car not found!', category='error')
-        return redirect(url_for('cars'))
+        return redirect(url_for('cars')) #TODO: Might have to send a different JSON object here
 
     # Create new car object
     car = {
@@ -201,6 +200,54 @@ def get_image(filename):
 # JONES' SECTION - END
 # -------------------------------------------------------------------------------
 
+
+# -------------------------------------------------------------------------------
+# NEXT SECTION - START
+# -------------------------------------------------------------------------------
+"""ADD CODE HERE"""
+# -------------------------------------------------------------------------------
+# NEXT SECTION - END
+# -------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------
+# NEXT SECTION - START
+# -------------------------------------------------------------------------------
+"""ADD CODE HERE"""
+# -------------------------------------------------------------------------------
+# NEXT SECTION - END
+# -------------------------------------------------------------------------------
+
+# ALL other routes should be defined above
+"""
+    Please create all new routes and views functions above this route.
+    This route is now our catch all route for our VueJS single page application.
+"""
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    """
+    Because we use HTML5 history mode in vue-router we need to configure our
+    web server to redirect all routes to index.html. Hence the additional route
+    "/<path:path".
+
+    Also we will render the initial webpage and then let VueJS take control.
+    """
+    # return app.send_static_file('index.html')
+    return render_template('index.html')
+
+"""
+    Here we defined a function to collect form errors from Flask-WTF which we can use later.
+"""
+def errorMSg(form): # TODO: Rename according to python standards
+    errorMessages = [] # TODO: Rename according to python standards
+   
+    for field, errors in form.errors.items():
+        for error in errors:
+            message = u"You have an error in %s field, %s" % (getattr(form, field).label.text, error)
+            errorMessages.append(message)
+
+    return errorMessages
 
 ###
 # The functions below should be applicable to all Flask apps.
