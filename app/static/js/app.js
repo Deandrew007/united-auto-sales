@@ -230,7 +230,7 @@ const Cars = {
   `
   <div class="car-card">
     <div class="car-image">
-      <img v-bind:src="'./uploads/' + photo" alt="Image of Car">
+      <img v-bind:src="'../static/uploads-car/' + photo" alt="Image of Car">
     </div>
     <div class="car-details">
       <h1 class="make">{{ make }}</h1>
@@ -260,13 +260,12 @@ const Cars = {
       </div>
 
       <div class="base">
-        <p v-if="isFavourited">TESTING</p>
         <a href="#" class="email">Email Owner</a>
         <div class="hearts">
-          <a class="fav-heart" v-on:click="favouriteCar()" v-if="isFavourited">
+          <a id="filled" class="fav-heart" v-on:click="favouriteCar()">
             <i class="fas fa-heart"></i>
           </a>
-          <a class="fav-heart" v-on:click="favouriteCar()" v-else>
+          <a id="empty" class="fav-heart" v-on:click="favouriteCar()">
             <i class="far fa-heart"></i>
           </a>
         </div>
@@ -302,13 +301,28 @@ const Cars = {
       return response.json();
     })
     .then(function(jsonResponse) {
-      // Saving the data into SELF/THIS
-      // Further parsing of the JSON object happens here.
+      /* 
+        Saving the data into SELF/THIS. 
+        Further parsing of the JSON object happens here.
+      */
 
+      // Get the heart elements
+      filled_heart = document.getElementById("filled");
+      empty_heart = document.getElementById("empty");
+
+      // Check for errors
+      if (car_status == 401) {
+        console.log("ERROR: " + jsonResponse.message)
+        router.push('/not found');
+      }
       if (car_status == 200) {
-        self.isFavourited = false;
+        // self.isFavourited = false;
+        empty_heart.classList.add("gone");
+        filled_heart.classList.remove("gone");
       } else {
-        self.isFavourited = true;
+        // self.isFavourited = true;
+        filled_heart.classList.add("gone");
+        empty_heart.classList.remove("gone");
       }
       
       self.id           = jsonResponse.id;
@@ -344,7 +358,7 @@ const Cars = {
       price: '',
       photo: '',
       user_id: ''
-      ,isFavourited: false
+      // ,isFavourited: false
     }
   }, 
   methods: {
@@ -352,7 +366,6 @@ const Cars = {
       // Initialize variables
       let self = this;
       let carID = self.id; // gets the id
-      // let userID = this.????;
 
       fetch("/api/cars/" + carID + "/favourite", {
         method: 'POST',
@@ -374,15 +387,16 @@ const Cars = {
           // If Yes, change the class of the icon to a filled heart
           self.isFavourited = true;
 
-          // Output a message and refresh the page
+          // Output a message
+          console.log(jsonResponse.message);
           console.log("Favourited-" + status + " for Car: " + jsonResponse.car_id + ", by User: " + jsonResponse.user_id);
         } else {
           // If No, change the class of the icon to an un-filled heart
           self.isFavourited = false;
 
-          // Output a message and refresh the page
+          // Output a message
+          console.log(jsonResponse.message);
           console.log("Not Favourited-" + status + " for Car: " + jsonResponse.car_id + ", by User: " + jsonResponse.user_id);
-          // router.push('/cars/' + jsonResponse.car_id);
         }
       })
       .catch(function(error) {

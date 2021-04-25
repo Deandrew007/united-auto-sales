@@ -35,7 +35,7 @@ def register():
         photo = form.photo.data
 
         filename=secure_filename(photo.filename)
-        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        photo.save(os.path.join(app.config['USER_UPLOAD_FOLDER'], filename))
         
         data = Users(username, password, fullname, location, email, biography, filename)
 
@@ -106,7 +106,6 @@ def get_favourites(user_id):
         fav_cars.append(car)
 
     return jsonify(fav_cars), 200
-
 # -------------------------------------------------------------------------------
 # EDWARDS' SECTION - END
 # -------------------------------------------------------------------------------
@@ -115,7 +114,6 @@ def get_favourites(user_id):
 # -------------------------------------------------------------------------------
 # JONES' SECTION - START
 # -------------------------------------------------------------------------------
-
 @app.route('/api/cars/<car_id>', methods=['GET'])
 def get_car(car_id):
     """
@@ -127,15 +125,17 @@ def get_car(car_id):
 
     # Retrieves a Car from the Database with the matching Car ID
     requested_car = db.session.query(CarsModel).filter_by(id=car_id).first()
-    # OR - either should work
-    # requested_car = db.session.query(CarsModel).get(car_id)
+    # OR - (either should work) | requested_car = db.session.query(CarsModel).get(car_id)
 
     # Check to see if the Car was found
     if (requested_car == None):
 
-        # If Car not found, flash user then redirect
-        flash('Car not found!', category='error')
-        return redirect(url_for('cars')) #TODO: Might have to send a different JSON object here
+        error_message = {
+            "message": "Access token is missing or invalid"
+        }
+
+        # If Car not found, send 401 & error message
+        return jsonify(error_message), 401
 
     # Create new car object
     car = {
@@ -159,13 +159,12 @@ def get_car(car_id):
     # Retrieves a Favourite from the Database with the matching Car ID
     requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
 
-    # Check to see if the Favourite was found
+    # Check to see if the Favourite was found for that Car and User
     if (requested_fav != None):
-        # If found, send 401
-        return jsonify(car), 401
+        # If found, send 201. It's not an error, but it should identify when a car was favourited
+        return jsonify(car), 201
 
     return jsonify(car), 200
-    # render_template('car_id.html', car=requested_car)
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
@@ -181,33 +180,36 @@ def favourite_car(car_id):
 
     # Retrieves a Favourite from the Database with the matching Car ID
     requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
-    # print("Favourited? - " , requested_fav)
 
     # Created the Favourite JSON object
     favourite_obj = {
-        "car_id": car_id,
-        "user_id": current_user_id
+        "message": "Car Successfully Favourited",
+        "car_id": car_id
     }
 
     # Check to see if the Favourite was found
     if (requested_fav != None):
-        # If found, delete it
-        # TODO: Add delete query here
+        
+        favourite_obj = {
+            "message": "Access token is missing or invalid",
+            "car_id": car_id
+        }
+
+        # If found, delete it from the database
         db.session.delete(requested_fav)
         db.session.commit()
 
         return jsonify(favourite_obj), 401
 
-    # Make Favourite's object for database
+    # Make Favourite's object for database...
     favourite = Favourites(car_id, current_user_id)
 
-    # Add to database
+    # ... then add it to the database
     db.session.add(favourite)
     db.session.commit()
 
-    flash('Added to Favourite!', category='success')
+    # flash('Added to Favourite!', category='success')
     return jsonify(favourite_obj), 200
-    # return redirect(url_for('cars', car_id=car_id))
 
 
 # This is needed to retrieve the images from the uploads folder
@@ -221,7 +223,6 @@ def get_image(filename):
 # @login_manager.user_loader
 # def load_user(id):
 #     return Users.query.get(int(id))
-
 # -------------------------------------------------------------------------------
 # JONES' SECTION - END
 # -------------------------------------------------------------------------------
