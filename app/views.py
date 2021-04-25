@@ -203,9 +203,11 @@ def get_image(filename):
 
 @app.route('/api/cars', methods=['POST'])
 #@login_required
-def addvehicle(car_id):
+def addvehicle():
     form = AddForm()
-    token = request.headers['Authorization'].split()[1]
+    print ("form",form.make.data,form.model.data,form.colour.data,form.year.data,\
+       form.price.data,form.car_type.data,form.transmission.data,form.photo.data,form.description.data)
+    #token = request.headers['Authorization'].split()[1]
     #current_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['asdfghjkl'])['id']
     if request.method == 'POST' and form.validate_on_submit():
         make= form.make.data
@@ -217,17 +219,18 @@ def addvehicle(car_id):
         transmission=form.transmission.data
         description=form.description.data
         photo = form.photo.data
-        filename = photo.filename
+        filename = secure_filename(photo.filename)
         photo.save(os.path.join(
             app.config['UPLOAD_FOLDER'], filename
         ))
           
         # addcar = Addcars(car_id, filename, caption)
-        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, photo, 1)
+        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, filename, 1)
 
         db.session.add(addcar)
         db.session.commit()
         return jsonify({'message': 'Car sucessfully added!'}),200
+    return jsonify({'message': 'Car was not succesfully added'}),404
 
 ###
 # The functions below should be applicable to all Flask apps.
@@ -252,7 +255,3 @@ def add_header(response):
     return response
 
 
-@app.errorhandler(404)
-def page_not_found(error):
-    """Custom 404 page."""
-    return render_template('404.html'), 404

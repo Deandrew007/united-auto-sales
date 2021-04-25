@@ -171,6 +171,9 @@ const Home = {
         <li class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/cars/new" class="nav-link">Add Car</router-link>
+        </li>
       </ul>
     </div>
   </nav>
@@ -346,80 +349,121 @@ const Cars = {
   }
 }
 
-// Abbys
+
+// Aby
 const AddCar = {
-  name: 'Add Car',
+  name: 'Add Cars',
   template: 
   `
-  <div class="car-card">
-    <div>
-        <img class="single" src="{{ url_for('get_image', filename = car.photo)}} "/>
-    </div>
-    <div class="single-card-body">
-        <h2>{{ car.title }}</h2>
-        <div class="attributes">
-            <span class="attribute price">{{ car.price }}</span> <span class="attribute type">{{ car.typeHA}}</span>
-        </div>
-        <p>{{ car.description }}</p>
-        <div class="add-tab">
-            <p><i class="fa fa-make"></i> {{ car.make }} Make</p>  
-            <p><i class="fa fa-model"></i> {{ car.model}} Model</p>
-        </div>
-        <div class="add-tab">
-            <p><i class="fa fa-colour"></i> {{ car.colour }} Colour</p>  
-            <p><i class="fa fa-year"></i> {{ car.year}} Year </p>
-        </div>
-        <div class="add-tab">
-            <p><i class="fa fa-price"></i> {{ car.price}} Price</p>  
-            <p><i class="fa fa-car_type"></i> {{ car.car_type}} Car Type</p>
-        </div>
-	
-        <p><i class="fa fa-transmission" aria-hidden="true"></i> {{ car.transmission }}</p>
-        <p><i class="fa fa-description" aria-hidden="true"></i> {{ car.description }}</p>
-        <button type="submit" class="btn email-btn">Email</button>
-    </div>
+  <div class="jumbotron">
+  <div class="addCar-grid">
+  <h1>Add New Car</h1>
+
+  <form id="addform" enctype="multipart/form-data" @submit.prevent="addVehicle">
+          <div class = "form-grid">
+          <div>
+              <label for="make" class="form-label">Make</label>
+              <br>
+              <input type="text" name="make" id="make" required>
+          </div>
+          <div>
+              <label for="model" class="form-label">Model</label>
+              <br>
+              <input type="text" name="model" id="model" required>
+          </div>
+          </div>
+          <div class = "form-grid">
+              <div>
+                  <label for="colour" class="form-label">Colour</label>
+                  <br>
+                  <input type="text" name="colour" id="colour" required>        
+              </div>
+              <div>
+                  <label for="year" class="form-label">Year</label>
+                  <br>
+                  <input type="text" name="year" id="year" required>        
+              </div>
+              </div>
+          <div class = "form-grid">
+            <div>
+                <label for="price" class="form-label">Price</label>
+                <br>
+                <input type="text" name="price" id="price" required>
+            </div>
+            <div>
+                <label for="car_type" class="form-label">Car Type</label>
+                <select name="car_type" id="car_type">
+                  <option value="SUV">SUV</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="Hatchback">Hatchback</option>
+                  <option value="Minivan">Minivan</option>
+                </select>
+             
+            </div>
+            </div>
+          <label for="transmission" class="form-label">Transmission</label>
+
+          <br>
+          <input type="text" name="transmission" id="transmission" required>
+          <br>
+          <label for="description" class="form-label">Description</label>
+          <br>
+          <textarea class="form-control" name="description"></textarea>
+          <br>
+          <label for="photo" class="form-label">Upload Photo</label>
+          <br>
+          <input type="file" name="photo" class="form-control">
+          <br>
+          <button type="submit" class="btn btn-success">Save</button>
+  </form>
+  
   </div>
-  `,created: function() {
+</div>
+  
+  
+  
 
-  },
-  methods: {
-    uploadpost: function() {
-      self = this;
-      let AddForm = document.getElementById('AddForm');
-      let form_data = new FormData(AddForm);
-      let user_id = localStorage.getItem('car_id');
-      fetch("/api/users/" + car_id + "/Add Vehicle", {
+  `,
+  data(){
+  return{
 
-        method: 'POST',
-        body: form_data,
-        headers: {
-            'X-CSRFToken': token,
-            'Authorization': 'Bearer ' + localStorage.getItem('token')
-        },
-        credentials: 'same-origin'
-      })
-      .then(function(response) {
-          return response.json();
-      })
-      .then(function(jsonResponse) {
-          // display a success message
-          //undefined - no erros
-          console.log(jsonResponse.message)
-          if (jsonResponse.message == "Car was uploaded sucessfully") {
-              router.push('/search');
-          }
-      })
-      .catch(function(error) {
-          console.log(error);
-      });
-    }
+  } 
   },
-  data() {
-    return {
-      id: 0,
-      messages: ""
+  methods:{
+    addVehicle(){
+        let addform = document.getElementById('addform');
+        let form_data = new FormData(addform);
+
+
+        fetch('/api/cars',{
+            method:'POST',
+            body: form_data,
+            headers:{
+                'X-CSRFToken': token
+            },
+            credentials: 'same-origin'
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (jsonResponse) {
+            // show success message
+            console.log(jsonResponse);
+            console.log(jsonResponse.register.status);
+            if (jsonResponse.register.status == 200) {
+              router.push('/login');
+            }else {
+              router.push('/home');
+            }
+        })
+        .catch (function(error){
+            // show error message
+            console.log(error);
+        })              
+
+      }
     }
-  }
+
 };
 
 
@@ -432,6 +476,8 @@ const routes = [
   { path: '/login', component: Login },
 
   { path: "/cars/:car_id", component: Cars },
+
+  { path: '/cars/new', component: AddCar },
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
 ];

@@ -23,6 +23,6 @@ class AddForm(FlaskForm):
     year = StringField('year', validators=[DataRequired()])
     price = StringField('price', validators=[DataRequired()])
     car_type = SelectField('Type of Car', choices=[("SUV","SUV"),("Sedan","Sedan"),("Hatchback","Hatchback"),("Minivan","Minivan")])
-    transmission = SelectField('Transmissions', choices=[("Automatic","Automatic"),("Manual","Manual")])
+    transmission = SelectField('Transmission', choices=[("Automatic","Automatic"),("Manual","Manual")])
     description = TextAreaField('description', validators=[DataRequired()])
     photo = FileField('Profile Photo', validators=[FileRequired(), FileAllowed(["jpg","png"],"Images only!")])
