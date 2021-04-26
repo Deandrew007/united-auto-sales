@@ -1,81 +1,32 @@
-"""
-Flask Documentation:     http://flask.pocoo.org/docs/
-Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
-Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
-This file creates your application.
-"""
-
 import os
-from app import app, db
-from flask import render_template, request, redirect, jsonify, url_for,\
+from app import app, db, login_manager
+from flask import render_template, request, redirect, jsonify, url_for, _request_ctx_stack,\
                 flash, session, send_from_directory, make_response, g
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
 from .forms import RegisterForm, AddForm, LoginForm
-# from flask_login import current_user, login_user, logout_user
-# from flask_login import LoginManager
+from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import LoginManager
 # Using JWT
 import jwt
-from flask import _request_ctx_stack
-from functools import wraps
 import datetime
-
-# from flask_login import current_user, login_user, logout_user
-# Create a JWT @requires_auth decorator
-# This decorator can be used to denote that a specific route should check
-# for a valid JWT token before displaying the contents of that route.
-def requires_auth(f):
-  @wraps(f)
-  def decorated(*args, **kwargs):
-    auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
-
-    if not auth:
-      return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
-
-    parts = auth.split()
-
-    if parts[0].lower() != 'bearer':
-      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
-    elif len(parts) == 1:
-      return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
-    elif len(parts) > 2:
-      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
-
-    token = parts[1]
-    try:
-        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-
-    except jwt.ExpiredSignatureError:
-        return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
-    except jwt.DecodeError:
-        return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
-
-    g.current_user = user = payload
-    return f(*args, **kwargs)
-
-  return decorated
 
 ###
 # Routing for your application.
 ###
-
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-    """
-    Because we use HTML5 history mode in vue-router we need to configure our
-    web server to redirect all routes to index.html. Hence the additional route
-    "/<path:path".
-
-    Also we will render the initial webpage and then let VueJS take control.
-    """
     # return app.send_static_file('index.html')
     return render_template('index.html')
 
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
+    print('User', current_user)
+    if current_user.is_authenticated:
+        return jsonify({'message':'already logged in'}), 200
+
     form = LoginForm()
     print("data",form.data)
     try:
@@ -83,10 +34,16 @@ def login():
             user = Users.query.filter_by(username=form.username.data).first()
             if user is None or not user.check_password(form.password.data):
                 return jsonify({"status": 401, "data": "Username not or Password incorrect"}),401
+            
+            remember_me  = False
+            if 'remember_me' in request.form:
+                remember_me = True
+            # get user id, load into session
+            login_user(user, remember=remember_me)
 
             payload = {
                 'id': user.id, 
-                'name': user.name,
+                'username': user.username,
                 'iat': datetime.datetime.now(datetime.timezone.utc),
                 'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=23)
             }
@@ -112,34 +69,47 @@ def register():
         biography = form.biography.data  
         photo = form.photo.data
 
-        filename=secure_filename(photo.filename)
-        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        
-        data = Users(username, password, fullname, location, email, biography, filename)
+        try:
+            new_user = Users(username, password, fullname, location, email, biography, filename)
 
-        db.session.add(data)
-        db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
-        register={
-            "status": 200,
-            "fullname": fullname,
-            "username": username,
-        }
-        return jsonify({'register': register}), 201
-    return jsonify(errorMsg(form)), 404
+            filename=secure_filename(photo.filename)
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            user = db.session.query(Users).filter(Users.username == username).first()
+            print('User', user)
+            user_details = {
+                "id": user.id,
+                "username": user.username,
+                "name": user.name,
+                "photo": user.photo,
+                "email": user.email,
+                "location": user.location,
+                "biography": user.biography,
+                "date_joined": user.date_joined
+            }
+        except IntegrityError as e:
+            db.session.rollback()
+            return jsonify({'error': 'Username or email already address already exists'}), 401
+        return jsonify(user_details), 201
+    return jsonify(errorMsg(form)), 401
 
 
 @app.route('/api/auth/logout', methods=['POST'])
-@requires_auth
+# @login_required
 def logout():
-    # logout_user()
-    return jsonify({'message':'logout successful'}), 200
+    logout_user()
+    print("logout")
+    return jsonify({'message' : 'logout successful'}), 200
+
 
 @app.route('/api/users/<user_id>', methods=['GET'])
-@requires_auth
+@login_required
 def get_user(user_id):
     user = db.session.query(Users).filter(Users.id == user_id).first()
-    print('User', user)
+    # print('User', user)
     user_details = {
         "id": user.id,
         "username": user.username,
@@ -150,11 +120,12 @@ def get_user(user_id):
         "biography": user.biography,
         "date_joined": user.date_joined
     }
+    print('User', user_details)
     return jsonify(user_details), 200
 
 
 @app.route('/api/users/<user_id>/favourites', methods=['GET'])
-@requires_auth
+@login_required
 def get_favourites(user_id):
     favourites = db.session.query(CarsModel).join(
         Favourites).filter(Favourites.user_id == user_id).all()
@@ -176,13 +147,9 @@ def get_favourites(user_id):
         fav_cars.append(car)
     return jsonify(fav_cars), 200
 
-# -------------------------------------------------------------------------------
-# JONES' SECTION - START
-# -------------------------------------------------------------------------------
-
 
 @app.route('/api/cars/<car_id>', methods=['GET'])
-@requires_auth
+@login_required
 def get_car(car_id):
     """
         Get Details of a specific car.
@@ -191,17 +158,19 @@ def get_car(car_id):
     # Convert to integer - just in case
     car_id = int(car_id)
 
-    # Retrieve Car from the Database
+    # Retrieves a Car from the Database with the matching Car ID
     requested_car = db.session.query(CarsModel).filter_by(id=car_id).first()
-    # OR - either should work
-    # requested_car = db.session.query(CarsModel).get(car_id)
+    # OR - (either should work) | requested_car = db.session.query(CarsModel).get(car_id)
 
     # Check to see if the Car was found
     if (requested_car == None):
 
-        # If Car not found, flash user then redirect
-        flash('Car not found!', category='error')
-        return redirect(url_for('cars'))
+        error_message = {
+            "message": "Access token is missing or invalid"
+        }
+
+        # If Car not found, send 401 & error message
+        return jsonify(error_message), 401
 
     # Create new car object
     car = {
@@ -218,12 +187,23 @@ def get_car(car_id):
         "user_id": requested_car.user_id
     }
 
+    # Gets the User's ID to make a Fasvourite's object
+    # current_user_id = current_user.id
+    current_user_id = current_user.get_id() #TODO: Find a way to get the current User ID
+
+    # Retrieves a Favourite from the Database with the matching Car ID
+    requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
+
+    # Check to see if the Favourite was found for that Car and User
+    if (requested_fav != None):
+        # If found, send 201. It's not an error, but it should identify when a car was favourited
+        return jsonify(car), 201
+
     return jsonify(car), 200
-    # render_template('car_id.html', car=requested_car)
 
 
 @app.route('/api/cars/<car_id>/favourite', methods=['POST'])
-@requires_auth
+@login_required
 def favourite_car(car_id):
     """
         Add car to Favourites for logged in user.
@@ -231,46 +211,50 @@ def favourite_car(car_id):
 
     # Gets the User's ID to make a Fasvourite's object
     # current_user_id = current_user.id
-    current_user_id = 1
+    current_user_id = 2 #TODO: Find a way to get the current User ID
 
-    # Make Favourite's object
-    favourite = Favourites(car_id, current_user_id)
+    # Retrieves a Favourite from the Database with the matching Car ID
+    requested_fav = db.session.query(Favourites).filter_by(car_id=car_id, user_id=current_user_id).first()
+
+    # Created the Favourite JSON object
     favourite_obj = {
-        "car_id": car_id,
-        "user_id": 2,
-        "favourite": "YES"
+        "message": "Car Successfully Favourited",
+        "car_id": car_id
     }
 
-    # Add to database
+    # Check to see if the Favourite was found
+    if (requested_fav != None):
+        
+        favourite_obj = {
+            "message": "Access token is missing or invalid",
+            "car_id": car_id
+        }
+
+        # If found, delete it from the database
+        db.session.delete(requested_fav)
+        db.session.commit()
+
+        return jsonify(favourite_obj), 401
+
+    # Make Favourite's object for database...
+    favourite = Favourites(car_id, current_user_id)
+
+    # ... then add it to the database
     db.session.add(favourite)
     db.session.commit()
 
-    flash('Added to Favourite!', category='success')
+    # flash('Added to Favourite!', category='success')
     return jsonify(favourite_obj), 200
-    # return redirect(url_for('cars', car_id=car_id))
 
 
-# This is needed to retrieve the images from the uploads folder
-@app.route('/uploads/<filename>')
-def get_image(filename):
-    rootdir = os.getcwd()
-    return send_from_directory(os.path.join(rootdir, app.config['UPLOAD_FOLDER']), filename)
-
-# user_loader callback. This callback is used to reload the user object from
-# the user ID stored in the session
-# @login_manager.user_loader
-# def load_user(id):
-#     return Users.query.get(int(id))
-
-# -------------------------------------------------------------------------------
-# JONES' SECTION - END
-# -------------------------------------------------------------------------------
 
 @app.route('/api/cars', methods=['POST'])
-@requires_auth
-def addvehicle(car_id):
+@login_required
+def addvehicle():
     form = AddForm()
-    token = request.headers['Authorization'].split()[1]
+    print ("form",form.make.data,form.model.data,form.colour.data,form.year.data,\
+       form.price.data,form.car_type.data,form.transmission.data,form.photo.data,form.description.data)
+    #token = request.headers['Authorization'].split()[1]
     #current_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['asdfghjkl'])['id']
     if request.method == 'POST' and form.validate_on_submit():
         make= form.make.data
@@ -282,27 +266,59 @@ def addvehicle(car_id):
         transmission=form.transmission.data
         description=form.description.data
         photo = form.photo.data
-        filename = photo.filename
+        filename = secure_filename(photo.filename)
         photo.save(os.path.join(
             app.config['UPLOAD_FOLDER'], filename
         ))
           
         # addcar = Addcars(car_id, filename, caption)
-        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, photo, 1)
+        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, filename, current_user.get_id())
 
         db.session.add(addcar)
         db.session.commit()
         return jsonify({'message': 'Car sucessfully added!'}),200
+    return jsonify({'message': 'Car was not succesfully added'}),404
 
-###
-# The functions below should be applicable to all Flask apps.
-###
-# @login_manager.user_loader
-# def load_user(id):
-#     return Users.query.get(int(id))
 
-def getJWT():
-    return jwt.encode({'project2': 'payload'}, 'secret', algorithm='HS256')
+# This is needed to retrieve the images from the uploads folder
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    rootdir = os.getcwd()
+    return send_from_directory(os.path.join(rootdir, app.config['UPLOAD_FOLDER']), filename)
+
+
+# user_loader callback. This callback is used to reload the user object from
+# the user ID stored jwt
+@login_manager.request_loader
+def load_user_from_request(request):
+    auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
+    print( 'Request header', request.headers.get('Authorization'))
+    print()
+    print()
+    if not auth:
+      return None
+
+    parts = auth.split()
+
+    if parts[0].lower() != 'bearer':
+      return None
+    elif len(parts) == 1:
+      return None
+    elif len(parts) > 2:
+      return None
+
+    token = parts[1]
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        user = Users.query.filter_by(id=int(payload['id'])).first()
+        if user:
+            # print('User in loader', user)
+            return user
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.DecodeError:
+        return None
+    return None
 
 
 def errorMSg(form):
@@ -317,6 +333,12 @@ def errorMSg(form):
             errorMessages.append(message)
 
     return errorMessages
+
+
+###
+# The functions below should be applicable to all Flask apps.
+###
+
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):

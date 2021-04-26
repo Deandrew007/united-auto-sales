@@ -48,24 +48,24 @@ const UserProfile = {
     let self = this;
     // let user_id = self.id; // gets the id
     let user_id = 3; // gets the id
-    let dates = {'01':'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June', 
-                  '07': 'July','08': 'August', '09': 'September', '10': 'October', '11': 'November', '12': 'December'}
+    let dates = {'Jan':'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 
+                  'Jul': 'July','Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'}
     /*==============GET USER  DETAILS==============*/
     // user ID should be there
     fetch("/api/users/" + user_id, {
       headers: {
-        // Accept:application/json
-        // Content-Type:application/json
+        Accept:'application/json',
+        'Content-Type':'application/json',
         method: 'GET',
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-          'X-CSRFToken': token
-        },
+        Authorization: "Bearer " + localStorage.getItem("token"),
+        'X-CSRFToken': token,
         credentials: 'same-origin'
       }
     })
-    .then(handleErrors)
     .then(function(response) {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
       // Parses the response
       return response.json();
     })
@@ -73,9 +73,10 @@ const UserProfile = {
       // Saving the data into SELF/THIS
       self.user = jsonResponse;
 
-      let date = (self.user.date_joined.split(" ")[0]).split("-");
-      console.log(date);
-      self.user.date_formated = dates[date[1]] +" "+dates[2]+", "+dates[0];
+      let date = self.user.date_joined.split(" ");
+      // console.log(self.user.date_joined);
+      self.user.date_formated = dates[date[2]] +" "+date[1]+", "+date[3];
+      // console.log(self.user.date_formated);
       // console.log(jsonResponse);
     })
     .catch(function(error) {
@@ -85,25 +86,24 @@ const UserProfile = {
     /*==============GET FAVOURITED CARS==============*/
     fetch("/api/users/"+user_id+"/favourites", {
       headers: {
-        // Accept:application/json
-        // Content-Type:application/json
+        Accept:'application/json',
         method: 'GET',
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-          'X-CSRFToken': token
-        },
+        Authorization: "Bearer " + localStorage.getItem("token"),
+        'X-CSRFToken': token,
         credentials: 'same-origin'
       }
     })
-    .then(handleErrors)
     .then(function(response) {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
       // Parses the response
       return response.json();
     })
     .then(function(jsonResponse) {
       // Saving the data into SELF/THIS
       self.fav_cars = jsonResponse
-      console.log(jsonResponse);
+      // console.log(jsonResponse);
     })
     .catch(function(error) {
       console.log(error);
@@ -125,6 +125,7 @@ const UserProfile = {
       fetch("/api/cars/" + carID + "/favourite", {
         method: 'POST',
         headers: {
+          Accept:'application/json',
           Authorization: "Bearer " + localStorage.getItem("token"),
           'X-CSRFToken': token
         },

@@ -2,8 +2,10 @@ import {UserProfile} from '../views/UserProfile.js';
 import {Home} from '../views/Home.js';
 import {Register} from '../views/Register.js';
 import {Login} from '../views/Login.js';
-import {Cars} from '../views/Cars.js';
+import {CarDetails} from '../views/CarDetails.js';
 import {NotFound} from '../views/NotFound.js';
+import {AddPost } from '../views/AddPost.js';
+import {Logout} from '../views/Logout.js'
 /* Add your Application JavaScript */
 
 const app = Vue.createApp({
@@ -31,14 +33,23 @@ app.component('app-header', {
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li v-if="jwtData.id==null" class="nav-item active">
           <router-link to="/register" class="nav-link">Register</router-link>
         </li>
-        <li class="nav-item active">
+        <li v-if="jwtData.id!=null" class="nav-item active" >
+          <router-link to="/cars/new" class="nav-link">Add Car</router-link>
+        </li>
+        <li v-if="jwtData.id!=null" class="nav-item active">
+          <router-link to="/explore" class="nav-link">Explore</router-link>
+        </li>
+        <li v-if="jwtData.id!=null" class="nav-item active">
           <router-link to="/users/{{jwtData.id}}" class="nav-link">My Profile</router-link>
         </li>
-        <li class="nav-item">
-          <router-link to="/login/" class="nav-link">Login</router-link>
+        <li v-if="jwtData.id==null" class="nav-item">
+          <router-link to="/login" class="nav-link">Login</router-link>
+        </li>
+        <li v-else class="nav-item">
+          <router-link to="/logout" class="nav-link">Logout</router-link>
         </li>
       </ul>
     </div>
@@ -60,8 +71,13 @@ app.component('app-header', {
     jwtData() {
       // JWT's are two base64-encoded JSON objects and a trailing signature
       // joined by periods. The middle section is the data payload.
-      if (localStorage.getItem('token')) return JSON.parse(atob(this.jwt.split('.')[1]));
-      return {};
+      let jwt = localStorage.getItem('token');
+      if (jwt){
+        let payload = JSON.parse(atob(jwt.split('.')[1]));
+        console.log('Decode jwt payload '+payload.id);
+        return payload
+      }
+      return {id: null, username: null};
     }
   }
 });
@@ -87,16 +103,14 @@ app.component('app-footer', {
 // Define Routes
 const routes = [
   { path: "/", component: Home },
-  // Put other routes here
   { path: '/register', component: Register },
-
   { path: '/login', component: Login },
-
+  { path: '/logout', component: Logout },
   { path: "/explore", component: UserProfile},
-
-  { path: "/cars/:car_id", component: Cars },
-
   { path: "/users/:user_id", component: UserProfile},
+  { path: '/cars/new', component: AddPost },
+  { path: "/cars/:car_id", component: CarDetails },
+
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
 ];

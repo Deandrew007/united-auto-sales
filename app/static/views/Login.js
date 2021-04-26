@@ -32,25 +32,28 @@ const Login = {
       loginUser(){
         let loginForm = document.getElementById('loginForm');
         let form_data = new FormData(loginForm);
-        console.log(form_data);
+
         fetch('/api/auth/login',{
             method:'POST',
             body: form_data,
             headers:{
+              Accept:'application/json',
                 'X-CSRFToken': token
             },
             credentials: 'same-origin'
         })
         // .then(handleErrors)
         .then(function (response) {
+          // console.log(response);
           if (!response.ok) {
             router.push('/login');
+            throw Error(response.statusText);
           }
           return response.json();
         })
         .then(function (jsonResponse) {
             // show success message
-            console.log(jsonResponse);
+            //console.log(jsonResponse);
             router.push('/explore');
             localStorage.setItem('token', jsonResponse.token)
             // router.push('');

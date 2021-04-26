@@ -63,22 +63,22 @@ const Register = {
                 method:'POST',
                 body: form_data,
                 headers:{
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': token
                 },
                 credentials: 'same-origin'
             })
             .then(function (response) {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                  }
                 return response.json();
             })
             .then(function (jsonResponse) {
                 // show success message
                 console.log(jsonResponse);
-                console.log(jsonResponse.register.status);
-                if (jsonResponse.register.status == 200) {
                   router.push('/login');
-                }else {
-                  router.push('/home');
-                }
             })
             .catch (function(error){
                 // show error message
