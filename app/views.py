@@ -6,6 +6,7 @@ This file creates your application.
 """
 
 import os
+import sys
 from app import app, db
 from flask import render_template, request, redirect, jsonify, url_for, flash, session, send_from_directory
 from app.models import CarsModel, Favourites, Users
@@ -240,9 +241,20 @@ def search():
     if request.method=="GET":
         # results = []
         # Make Query
-        cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
+        make = request.args.get('make',default="Boyz")
+        print(make,file=sys.stderr)
+        model = request.args.get('model',default="Camry")
+        print(model)
+        # cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
+        # cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + make + "%"))
+        cars = db.session.query(CarsModel).filter(CarsModel.make == make )
+
+
+
         # Model Query
-        spec_cars = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
+        # spec_cars = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
+        # spec_cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + model + "%"))
+        spec_cars = db.session.query(CarsModel).filter(CarsModel.model == model )
 
         if cars is not None and spec_cars is None:
             for car in cars:
@@ -255,7 +267,14 @@ def search():
                 results.append(car)
             return jsonify(results)
         
-    return jsonify_errors(form_errors(searchform))
+        # elif cars is not None and spec_cars is not None:
+        #     for car in cars:
+        #         results.append(car)
+        #     for car in spec_cars:
+        #         results.append(car)
+        #     return jsonify(results)
+        
+    # return jsonify_errors(form_errors(searchform))
 
 """ Javian Anderson Code ENDS """
 

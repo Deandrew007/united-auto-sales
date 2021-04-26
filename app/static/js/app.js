@@ -429,7 +429,7 @@ const Explore = {
   name: 'explore',
   template:
   `
-  <form id="searchForm" enctype="multipart/form-data" @submit.prevent="searchAll">
+  <form id="searchForm" enctype="multipart/form-data" @submit.prevent="Search">
   <div class = "form-grid">
     <div>
         <label for="make" class="form-label">Search By Make</label>
@@ -451,7 +451,7 @@ const Explore = {
   </form>
   <div>
         <ul class="main">
-         <!-- {% for car in results %} --!>
+         
             <li v-for="car in results">
                 <div class="card" style="width:18rem;">
                     <img src="" class="card-img-top" alt="...">
@@ -469,17 +469,19 @@ const Explore = {
   `,
   methods:{
     Search :function(){
-      let self = this;
-            
+      let self = this;            
       let SearchForm = document.getElementById('searchForm');
-      let form_data = new FormData(SearchForm);  
-      fetch('/api/search',{
+      let make1 = document.getElementById('make').value;
+      let model1 = document.getElementById('model').value;       
+      
+      fetch("/api/search?"+ new URLSearchParams({ make:make1,model:model1 }),{
         method:'GET',
-        body: form_data
+        // body: form_data
         // headers: 
+        // params:{"make":make, "model":model}
       })
       .then(function(response){
-        return response.json();
+        console.log(response);
         // response = response.json();
         // data = response.json();
         // this.results =data;
