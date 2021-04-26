@@ -56,6 +56,7 @@ const Cars = {
           // Content-Type:application/json
           method: 'GET',
           headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
             'X-CSRFToken': token
           },
           credentials: 'same-origin'
@@ -109,6 +110,7 @@ const Cars = {
         fetch("/api/cars/" + carID + "/favourite", {
           method: 'POST',
           headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
             'X-CSRFToken': token
           },
           credentials: 'same-origin'
