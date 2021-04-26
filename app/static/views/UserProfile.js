@@ -33,7 +33,7 @@ const UserProfile = {
               <div class="row">
                   <p>{{car.year}} {{car.make}}</p>
                   <p class="price">
-                      <i class="fas fa-tag"></i>${car.price}
+                      <i class="fas fa-tag"></i>{{car.price}}
                   </p>
               </div>
               <p class="grey">{{car.model}}</p>
@@ -145,13 +145,7 @@ const UserProfile = {
       .catch(function(error) {
         console.log(error);
       });
-    },
-
-    removeToken() {
-      localStorage.getItem("token");
-      console.info("Token removed from localStorage.");
-      alert("Token removed!");
-    },
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 from . import db
 from datetime import datetime
 from sqlalchemy.sql import func
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class CarsModel(db.Model):
@@ -79,7 +79,10 @@ class Users(db.Model):
         self.email = email
         self.biography = biography
         self.photo = photo
-
+    
+    def check_password(self,password):
+        return check_password_hash(self.password, password)
+        
     def is_authenticated(self):
         return True
 

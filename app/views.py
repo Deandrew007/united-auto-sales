@@ -11,7 +11,9 @@ from flask import render_template, request, redirect, jsonify, url_for,\
                 flash, session, send_from_directory, make_response, g
 from app.models import CarsModel, Favourites, Users
 from werkzeug.utils import secure_filename
-from .forms import RegisterForm, AddForm
+from .forms import RegisterForm, AddForm, LoginForm
+# from flask_login import current_user, login_user, logout_user
+# from flask_login import LoginManager
 # Using JWT
 import jwt
 from flask import _request_ctx_stack
@@ -72,6 +74,32 @@ def index(path):
     return render_template('index.html')
 
 
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    form = LoginForm()
+    print("data",form.data)
+    try:
+        if form.validate_on_submit():
+            user = Users.query.filter_by(username=form.username.data).first()
+            if user is None or not user.check_password(form.password.data):
+                return jsonify({"status": 401, "data": "Username not or Password incorrect"}),401
+
+            payload = {
+                'id': user.id, 
+                'name': user.name,
+                'iat': datetime.datetime.now(datetime.timezone.utc),
+                'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=23)
+            }
+
+            token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+            return jsonify({"message": 'Login Successful', 'token':token}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"status": 401, "data": "Form not completed properly"}), 401
+        
+    return jsonify({"status": 401, "data": "Form not completed properly"}), 401
+ 
+
 @app.route('/api/register',methods=['POST'])
 def register():
     form= RegisterForm()
@@ -94,12 +122,18 @@ def register():
 
         register={
             "status": 200,
-            "message": fullname + " ,Registered Successfully",
-            "username": username
+            "fullname": fullname,
+            "username": username,
         }
-        return jsonify(register=register)
-    #  return jsonify(errorMsg(form))
+        return jsonify({'register': register}), 201
+    return jsonify(errorMsg(form)), 404
 
+
+@app.route('/api/auth/logout', methods=['POST'])
+@requires_auth
+def logout():
+    # logout_user()
+    return jsonify({'message':'logout successful'}), 200
 
 @app.route('/api/users/<user_id>', methods=['GET'])
 @requires_auth
@@ -263,6 +297,14 @@ def addvehicle(car_id):
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+# @login_manager.user_loader
+# def load_user(id):
+#     return Users.query.get(int(id))
+
+def getJWT():
+    return jwt.encode({'project2': 'payload'}, 'secret', algorithm='HS256')
+
+
 def errorMSg(form):
     errorMessages = []
    
