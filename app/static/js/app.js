@@ -44,7 +44,7 @@ app.component('app-header', {
           <router-link to="/explore" class="nav-link">Explore</router-link>
         </li>
         <li v-if="jwtData.id!=null" class="nav-item active">
-          <router-link to="/users/jwtData.id" class="nav-link">My Profile</router-link>
+          <router-link :to="'/users/'+jwtData.id" class="nav-link">My Profile</router-link>
         </li>
         <li v-if="jwtData.id==null" class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>

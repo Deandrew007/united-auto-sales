@@ -8,7 +8,7 @@ const UserProfile = {
   <div class="flexing">
     <div class="user-favs">
       <div class="user-card">
-          <img v-bind:src="../static/uploads/" + user.photo alt="profile pic">
+          <img v-bind:src="'../static/uploads/' + user.photo" alt="profile pic">
           <div class="user-details">
               <h1>{{user.name}}</h1>
               <h2 class="grey">@{{user.username}}</h2>
@@ -31,7 +31,7 @@ const UserProfile = {
           <h2>Cars Favourited</h2>
           <div class="car-grid">
             <div v-for="car in fav_cars" class="fav-car">
-              <img v-bind:src="../static/uploads/"  + car.photo  alt="A car">
+              <img v-bind:src="'../static/uploads/'  + car.photo"  alt="A car">
               <div class="row">
                   <p>{{car.year}} {{car.make}}</p>
                   <p class="price">
@@ -50,6 +50,10 @@ const UserProfile = {
     let self = this;
     // let user_id = self.id; // gets the id
     let user_id = 3; // gets the id
+    let jwt1 = localStorage.getItem('token');
+    let payload1 = JSON.parse(atob(jwt1.split('.')[1]));
+    // console.log('Decode jwt payload '+payload.id);
+    user_id  = payload1.id;
     let dates = {'Jan':'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April', 'May': 'May', 'Jun': 'June', 
                   'Jul': 'July','Aug': 'August', 'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'}
     /*==============GET USER  DETAILS==============*/
