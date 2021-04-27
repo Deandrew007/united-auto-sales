@@ -8,22 +8,22 @@ const Logout = {
     </div>
     `,
     created: ()=>{
-        console.log(token);
+        // console.log("Token here "+token);
         fetch("/api/auth/logout", {
+            method: 'POST',
             headers: {
-              Accept:'application/json',
-                method: 'POST',
+                Accept:'application/json',
                 Authorization: "Bearer " + localStorage.getItem("token"),
                 'X-CSRFToken': token,
-                credentials: 'same-origin'
-            }
+            },
+            credentials: 'same-origin'
           })
           .then(function(response) {
             if (!response.ok) {
               throw Error(response.statusText);
             }
             // Parses the response
-            console.log(response);
+            // console.log(response);
             return response.json();
           })
           .then(function(jsonResponse) {

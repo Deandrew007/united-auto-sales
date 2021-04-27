@@ -63,8 +63,8 @@ const Register = {
                 method:'POST',
                 body: form_data,
                 headers:{
-                    Accept: 'application/json',
-                    'Content-Type': 'multipart/form-data',
+                    //Accept: 'application/json',
+                    //'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': token
                 },
                 credentials: 'same-origin'

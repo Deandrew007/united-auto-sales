@@ -1,4 +1,6 @@
 // Component for viewing Car Details page 
+// :src=user.photo
+// src="{{car.photo}}"
 const UserProfile = {
   name: 'User Profile',
   template: 
@@ -6,7 +8,7 @@ const UserProfile = {
   <div class="flexing">
     <div class="user-favs">
       <div class="user-card">
-          <img :src=user.photo alt="profile pic">
+          <img v-bind:src="../static/uploads/" + user.photo alt="profile pic">
           <div class="user-details">
               <h1>{{user.name}}</h1>
               <h2 class="grey">@{{user.username}}</h2>
@@ -29,7 +31,7 @@ const UserProfile = {
           <h2>Cars Favourited</h2>
           <div class="car-grid">
             <div v-for="car in fav_cars" class="fav-car">
-              <img src="{{car.photo}}" alt="A car">
+              <img v-bind:src="../static/uploads/"  + car.photo  alt="A car">
               <div class="row">
                   <p>{{car.year}} {{car.make}}</p>
                   <p class="price">
@@ -85,13 +87,13 @@ const UserProfile = {
 
     /*==============GET FAVOURITED CARS==============*/
     fetch("/api/users/"+user_id+"/favourites", {
+      method: 'GET',
       headers: {
         Accept:'application/json',
-        method: 'GET',
         Authorization: "Bearer " + localStorage.getItem("token"),
         'X-CSRFToken': token,
-        credentials: 'same-origin'
-      }
+      },
+      credentials: 'same-origin'
     })
     .then(function(response) {
       if (!response.ok) {
