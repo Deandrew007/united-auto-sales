@@ -1,7 +1,7 @@
 # ----------------------
 # Flask
 # ----------------------
-wheel==0.36.2
+wheel
 flask
 Flask-WTF
 Flask-SQLAlchemy

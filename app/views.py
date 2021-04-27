@@ -137,7 +137,7 @@ def get_favourites(user_id):
             "year": fav_car.year,
             "make": fav_car.make,
             "model": fav_car.model,
-            "colour": fav_car.colour,
+            "colour": fav_car.colorr,
             "transmission": fav_car.transmission,
             "car_type": fav_car.car_type,
             "price": fav_car.price,
@@ -312,7 +312,7 @@ def search():
                     "year": car.year,
                     "make": car.make,
                     "model": car.model,
-                    "colour": car.color,
+                    "colour": car.colour,
                     "transmission": car.transmission,
                     "car_type": car.car_type,
                     "price": car.price,
@@ -331,7 +331,7 @@ def search():
                     "year": car.year,
                     "make": car.make,
                     "model": car.model,
-                    "colour": car.color,
+                    "colour": car.colour,
                     "transmission": car.transmission,
                     "car_type": car.car_type,
                     "price": car.price,
@@ -349,7 +349,7 @@ def search():
                     "year": car.year,
                     "make": car.make,
                     "model": car.model,
-                    "colour": car.color,
+                    "colour": car.colour,
                     "transmission": car.transmission,
                     "car_type": car.car_type,
                     "price": car.price,
@@ -416,6 +416,7 @@ def errorMsg(form):
             errorMessages.append(message)
 
     return errorMessages
+
 
 
 ###

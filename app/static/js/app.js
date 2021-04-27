@@ -6,6 +6,7 @@ import {CarDetails} from '../views/CarDetails.js';
 import {NotFound} from '../views/NotFound.js';
 import {AddPost } from '../views/AddPost.js';
 import {Logout} from '../views/Logout.js'
+import {Explore} from '../views/Explore.js'
 /* Add your Application JavaScript */
 
 const app = Vue.createApp({
@@ -43,7 +44,7 @@ app.component('app-header', {
           <router-link to="/explore" class="nav-link">Explore</router-link>
         </li>
         <li v-if="jwtData.id!=null" class="nav-item active">
-          <router-link to="/users/{{jwtData.id}}" class="nav-link">My Profile</router-link>
+          <router-link :to="'/users/'+jwtData.id" class="nav-link">My Profile</router-link>
         </li>
         <li v-if="jwtData.id==null" class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>
@@ -59,11 +60,13 @@ app.component('app-header', {
   created: function(){
     let self = this;
 
-    localStorage.getItem('token')
+    self.jwt = localStorage.getItem('token');
+    console.log(self.jwt);
   },
   data: function() {
     return {
-      user_id: ''
+      user_id: '',
+      jwt: ''
     };
   },
   computed: {
@@ -71,9 +74,9 @@ app.component('app-header', {
     jwtData() {
       // JWT's are two base64-encoded JSON objects and a trailing signature
       // joined by periods. The middle section is the data payload.
-      let jwt = localStorage.getItem('token');
-      if (jwt){
-        let payload = JSON.parse(atob(jwt.split('.')[1]));
+      // let jwt = localStorage.getItem('token');
+      if (this.jwt){
+        let payload = JSON.parse(atob(this.jwt.split('.')[1]));
         console.log('Decode jwt payload '+payload.id);
         return payload
       }
@@ -83,19 +86,17 @@ app.component('app-header', {
 });
 
 app.component('app-footer', {
-  name: 'AppFooter',
-  template: 
-  `
-  <footer>
-    <div class="container">
-      <p>Copyright &copy; {{ year }} Flask Inc.</p>
-    </div>
-  </footer>
+  template: `
+      <footer>
+          <div class="container">
+              <p>Copyright &copy {{ year }} United Auto Sales</p>
+          </div>
+      </footer>
   `,
-  data() {
-    return {
-      year: (new Date).getFullYear()
-    }
+  data: function() {
+      return {
+          year: (new Date).getFullYear()
+      };
   }
 });
 
@@ -106,7 +107,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/login', component: Login },
   { path: '/logout', component: Logout },
-  { path: "/explore", component: UserProfile},
+  { path: "/explore", component: Explore},
   { path: "/users/:user_id", component: UserProfile},
   { path: '/cars/new', component: AddPost },
   { path: "/cars/:car_id", component: CarDetails },

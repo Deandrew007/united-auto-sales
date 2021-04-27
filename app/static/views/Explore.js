@@ -45,6 +45,12 @@ const Explore = {
         
         fetch("/api/search?"+ new URLSearchParams({ make:make1,model:model1 }),{
           method:'GET',
+          headers:{
+             Accept:'application/json',
+            'Content-Type':'application/json',
+            'X-CSRFToken': token,
+          },
+        credentials: 'same-origin'
         })
         .then(function(response){
           return response.json();
@@ -57,7 +63,7 @@ const Explore = {
             <div class="col align-self-center" id="results_d">
               
                     <div class="card" style="width:18rem;">
-                        <img src="${cars.photo}" class="card-img-top" alt="...">
+                        <img src="'../static/uploads/'  + ${cars.photo}" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h4 class="card-title">Car Make is ${cars.make} and Car Model is ${cars.model}</h4>
                             <p class="card-text"> ${cars.description} </p>
