@@ -457,6 +457,12 @@ const Explore = {
     <br>
 
     <button type="submit" class="btn btn-lg btn-block btn-primary">Search</button>
+
+    <br>
+
+    <div class="d-flex justify-content-center">
+      <h5 class="text-danger btn-info"> AN EMPTY SEARCH WILL RETURN ALL CARS </h5>
+    </div>
   </form>
   <br>
   <br>
