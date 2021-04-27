@@ -430,24 +430,33 @@ const Explore = {
   template:
   `
   <form id="searchForm" enctype="multipart/form-data" @submit.prevent="Search">
-  <div class = "form-grid">
+  <div class="d-flex justify-content-center">
+      <h3 class="text-success"> You Can Search By Either Car Make, Car Model, or Both </h3>
+  </div>
+  
+  <br>
+
+  <div class = "form-grid d-flex justify-content-center">
     <div>
         <label for="make" class="form-label">Search By Make</label>
         <br>
         
-        <input type="text" name="make" id="make" required>
+        <input type="text" name="make" id="make">
     </div>
+
     <br>
-    <div>
-    <h1> OR </h1>
-    </div>
+
     <div>
       <label for="model" class="form-label">Search By Model</label>
       <br>
-      <input type="text" name="model" id="model" required>
+      <input type="text" name="model" id="model">
     </div>
+
     </div>
-    <button type="submit" class="btn btn-primary">Search</button>
+
+    <br>
+
+    <button type="submit" class="btn btn-lg btn-block btn-primary">Search</button>
   </form>
   <br>
   <br>
@@ -473,7 +482,7 @@ const Explore = {
         // return json;
         const html = json.map(function(cars){
           return `
-          <div class="col align-self-center">
+          <div class="col align-self-center" id="results_d">
             
                   <div class="card" style="width:18rem;">
                       <img src="${cars.photo}" class="card-img-top" alt="...">
@@ -492,12 +501,20 @@ const Explore = {
         })
         .join("");
         // console.log(html);
-        document.querySelector('#results').insertAdjacentHTML("afterend",html);
+        // document.querySelector('#results').innerHTML = "";
+        var results1 = document.getElementById("results");
+        document.getElementById("results").innerHTML=" ";
+	      // results1.removeChild(document.getElementById("results_d"));
+        // results1.parentNode.replaceChild(results1.cloneNode(false), results1);
+        // document.getElementById("results_d").remove();
+        // document.querySelector('#results').insertAdjacentHTML("afterend",html);
+        document.querySelector('#results').innerHTML=html;
       })
       .catch(function(error){
         console.log(error);
       });
-    }
+    },
+
   
   }  
 

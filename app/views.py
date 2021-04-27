@@ -253,6 +253,9 @@ def search():
         # Model Query
         spec_cars = db.session.query(CarsModel).filter(model==model).all()
 
+        #Both Query
+        spec_cars1 = db.session.query(CarsModel).filter(model==model, make==make).all()
+
         if cars is not None and spec_cars is None:
             for car in cars:
                 fcar = {
@@ -291,22 +294,7 @@ def search():
             print(jsonify(results))
         
         elif cars is not None and spec_cars is not None:
-            for car in cars:
-                fcar = {
-                    "id": car.id,
-                    "description": car.description,
-                    "year": car.year,
-                    "make": car.make,
-                    "model": car.model,
-                    "colour": car.color,
-                    "transmission": car.transmission,
-                    "car_type": car.car_type,
-                    "price": car.price,
-                    "photo": car.photo,
-                    "user_id": car.user_id
-                }
-                results.append(fcar)
-            for car in spec_cars:
+            for car in spec_cars1:
                 fcar = {
                     "id": car.id,
                     "description": car.description,
@@ -322,8 +310,6 @@ def search():
                 }
                 results.append(fcar)
             return jsonify(results)
-        
-    # return jsonify_errors(form_errors(searchform))
 
 """ Javian Anderson Code ENDS """
 
