@@ -78,7 +78,7 @@ const Register = {
             .then(function (jsonResponse) {
                 // show success message
                 console.log(jsonResponse);
-                  router.push('/login');
+                  router.push('/explore');
             })
             .catch (function(error){
                 // show error message

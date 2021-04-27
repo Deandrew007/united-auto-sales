@@ -10,6 +10,7 @@ from flask_login import LoginManager
 # Using JWT
 import jwt
 import datetime
+from sqlalchemy.exc import IntegrityError
 
 ###
 # Routing for your application.
@@ -68,14 +69,13 @@ def register():
         location = form.location.data
         biography = form.biography.data  
         photo = form.photo.data
-
+        filename=secure_filename(photo.filename)
         try:
             new_user = Users(username, password, fullname, location, email, biography, filename)
 
             db.session.add(new_user)
             db.session.commit()
 
-            filename=secure_filename(photo.filename)
             photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             user = db.session.query(Users).filter(Users.username == username).first()
@@ -98,7 +98,7 @@ def register():
 
 
 @app.route('/api/auth/logout', methods=['POST'])
-# @login_required
+@login_required
 def logout():
     logout_user()
     print("logout")
@@ -120,7 +120,7 @@ def get_user(user_id):
         "biography": user.biography,
         "date_joined": user.date_joined
     }
-    print('User', user_details)
+    # print('User', user_details)
     return jsonify(user_details), 200
 
 
@@ -146,6 +146,38 @@ def get_favourites(user_id):
         }
         fav_cars.append(car)
     return jsonify(fav_cars), 200
+
+
+@app.route('/api/cars', methods=['POST'])
+@login_required
+def addvehicle():
+    form = AddForm()
+    print ("form",form.make.data,form.model.data,form.colour.data,form.year.data,\
+       form.price.data,form.car_type.data,form.transmission.data,form.photo.data,form.description.data)
+    #token = request.headers['Authorization'].split()[1]
+    #current_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['asdfghjkl'])['id']
+    if request.method == 'POST' and form.validate_on_submit():
+        make= form.make.data
+        model= form.model.data
+        colour=form.colour.data
+        year=form.year.data
+        price=form.price.data
+        car_type=form.car_type.data
+        transmission=form.transmission.data
+        description=form.description.data
+        photo = form.photo.data
+        filename = secure_filename(photo.filename)
+        photo.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], filename
+        ))
+          
+        # addcar = Addcars(car_id, filename, caption)
+        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, filename, current_user.get_id())
+
+        db.session.add(addcar)
+        db.session.commit()
+        return jsonify({'message': 'Car sucessfully added!'}),200
+    return jsonify({'message': 'Car was not succesfully added'}),404
 
 
 @app.route('/api/cars/<car_id>', methods=['GET'])
@@ -247,38 +279,87 @@ def favourite_car(car_id):
     return jsonify(favourite_obj), 200
 
 
+""" Javian Anderson Code Begins """
 
-@app.route('/api/cars', methods=['POST'])
-@login_required
-def addvehicle():
-    form = AddForm()
-    print ("form",form.make.data,form.model.data,form.colour.data,form.year.data,\
-       form.price.data,form.car_type.data,form.transmission.data,form.photo.data,form.description.data)
-    #token = request.headers['Authorization'].split()[1]
-    #current_id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['asdfghjkl'])['id']
-    if request.method == 'POST' and form.validate_on_submit():
-        make= form.make.data
-        model= form.model.data
-        colour=form.colour.data
-        year=form.year.data
-        price=form.price.data
-        car_type=form.car_type.data
-        transmission=form.transmission.data
-        description=form.description.data
-        photo = form.photo.data
-        filename = secure_filename(photo.filename)
-        photo.save(os.path.join(
-            app.config['UPLOAD_FOLDER'], filename
-        ))
-          
-        # addcar = Addcars(car_id, filename, caption)
-        addcar = CarsModel(description, make, model, colour, year, transmission, car_type, price, filename, current_user.get_id())
+@app.route('/api/search',methods=['GET'])
+def search():
+    #CREATE FORM TO SEARCH BY MAKE OR MODEL
+    # searchform = SearchForm()
+    # results = []
+    if request.method=="GET":
+        results = []
 
-        db.session.add(addcar)
-        db.session.commit()
-        return jsonify({'message': 'Car sucessfully added!'}),200
-    return jsonify({'message': 'Car was not succesfully added'}),404
+        # Make Param
+        make = request.args.get('make',default="Boyz")
+        # Model Param
+        model = request.args.get('model',default="Camry")
 
+        # Make Query
+        cars = db.session.query(CarsModel).filter(make==make).all()
+        print(type(cars))
+
+        # Model Query
+        spec_cars = db.session.query(CarsModel).filter(model==model).all()
+
+        #Both Query
+        spec_cars1 = db.session.query(CarsModel).filter(model==model, make==make).all()
+
+        if cars is not None and spec_cars is None:
+            for car in cars:
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            print(jsonify(results))
+            
+        
+        elif (cars is None and spec_cars is not None):
+            for car in spec_cars:
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            print(jsonify(results))
+        
+        elif cars is not None and spec_cars is not None:
+            for car in spec_cars1:
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            return jsonify(results)
+
+""" Javian Anderson Code ENDS """
 
 # This is needed to retrieve the images from the uploads folder
 @app.route('/uploads/<filename>')
@@ -292,9 +373,11 @@ def get_image(filename):
 @login_manager.request_loader
 def load_user_from_request(request):
     auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
-    print( 'Request header', request.headers.get('Authorization'))
+    # print( 'Request header', request.headers.get('Authorization'))
+    print("Request", request.headers)
     print()
     print()
+    print( 'CSRF Token', request.headers.get('X-CSRFToken'))
     if not auth:
       return None
 
@@ -321,7 +404,7 @@ def load_user_from_request(request):
     return None
 
 
-def errorMSg(form):
+def errorMsg(form):
     errorMessages = []
    
     for field, errors in form.errors.items():
