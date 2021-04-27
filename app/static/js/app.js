@@ -449,27 +449,15 @@ const Explore = {
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
   </form>
-  <div>
-        <ul class="main">
-         
-            <li v-for="car in results">
-                <div class="card" style="width:18rem;">
-                    <img src="" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h4 class="card-title">Car Make is {{ car.make }} and Car Model is {{ car.model }}</h4>
-                        <p class="card-text"> {{ car.description }} </p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        
-    </div>
-  
+  <br>
+  <br>
+  <br>
+  <div class="row" id="results"></div>
   `,
   methods:{
     Search :function(){
-      let self = this;            
+      let self = this;
+      let results =[];           
       let SearchForm = document.getElementById('searchForm');
       let make1 = document.getElementById('make').value;
       let model1 = document.getElementById('model').value;       
@@ -481,13 +469,35 @@ const Explore = {
         // params:{"make":make, "model":model}
       })
       .then(function(response){
-        console.log(response.json());
-        // response = response.json();
-        // data = response.json();
-        // this.results =data;
+        return response.json();
       })
-      .then(function(jsonResponse){
-        self.results = jsonResponse;
+      .then(function(json){
+        // console.log(json);
+        // return json;
+        const html = json.map(function(cars){
+          return `
+          <div class="col align-self-center">
+            
+                  <div class="card" style="width:18rem;">
+                      <img src="${cars.photo}" class="card-img-top" alt="...">
+                      <div class="card-body">
+                          <h4 class="card-title">Car Make is ${cars.make} and Car Model is ${cars.model}</h4>
+                          <p class="card-text"> ${cars.description} </p>
+                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                      </div>
+                  </div>
+              
+        
+          </div>
+          <br><br><br>
+          `;
+        })
+        .join("");
+        console.log(html);
+        document.querySelector('#results').insertAdjacentHTML("afterend",html);
+      })
+      .catch(function(error){
+        console.log(error);
       });
     }
   
