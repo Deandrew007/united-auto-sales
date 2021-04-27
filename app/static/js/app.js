@@ -86,19 +86,17 @@ app.component('app-header', {
 });
 
 app.component('app-footer', {
-  name: 'AppFooter',
-  template: 
-  `
-  <footer>
-    <div class="container">
-      <p>Copyright &copy; {{ year }} Flask Inc.</p>
-    </div>
-  </footer>
+  template: `
+      <footer>
+          <div class="container">
+              <p>Copyright &copy {{ year }} United Auto Sales</p>
+          </div>
+      </footer>
   `,
-  data() {
-    return {
-      year: (new Date).getFullYear()
-    }
+  data: function() {
+      return {
+          year: (new Date).getFullYear()
+      };
   }
 });
 

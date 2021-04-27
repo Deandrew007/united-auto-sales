@@ -25,7 +25,7 @@ class CarsModel(db.Model):
         self.description = description
         self.make = make
         self.model = model
-        self.colour = color
+        self.color = color
         self.year = year
         self.transmission = transmission
         self.car_type = car_type

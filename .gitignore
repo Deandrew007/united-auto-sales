@@ -6,6 +6,8 @@ Thumbs.db
 *$py.class
 
 # virtualenv
+.venv1/
+venv1/
 .venv/
 venv/
 
