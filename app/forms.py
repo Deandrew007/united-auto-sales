@@ -31,3 +31,7 @@ class AddForm(FlaskForm):
     transmission = SelectField('Transmission', choices=[("Automatic","Automatic"),("Manual","Manual")])
     description = TextAreaField('description', validators=[DataRequired()])
     photo = FileField('Profile Photo', validators=[FileRequired(), FileAllowed(["jpg","png"],"Images only!")])
+    
+class SearchForm(FlaskForm):
+    make = StringField('Make', validators=[DataRequired()])
+    model  = StringField('Model', validators=[DataRequired()])
