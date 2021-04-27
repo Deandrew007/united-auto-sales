@@ -103,7 +103,7 @@ def get_favourites(user_id):
             "year": fav_car.year,
             "make": fav_car.make,
             "model": fav_car.model,
-            "colour": fav_car.colour,
+            "colour": fav_car.colorr,
             "transmission": fav_car.transmission,
             "car_type": fav_car.car_type,
             "price": fav_car.price,
@@ -236,43 +236,92 @@ def addvehicle(car_id):
 @app.route('/api/search',methods=['GET'])
 def search():
     #CREATE FORM TO SEARCH BY MAKE OR MODEL
-    searchform = SearchForm()
-    results = []
+    # searchform = SearchForm()
+    # results = []
     if request.method=="GET":
-        # results = []
-        # Make Query
+        results = []
+
+        # Make Param
         make = request.args.get('make',default="Boyz")
-        print(make,file=sys.stderr)
+        # Model Param
         model = request.args.get('model',default="Camry")
-        print(model)
-        # cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + searchform.make.data + "%"))
-        # cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + make + "%"))
-        cars = db.session.query(CarsModel).filter(CarsModel.make == make )
 
-
+        # Make Query
+        cars = db.session.query(CarsModel).filter(make==make).all()
+        print(type(cars))
 
         # Model Query
-        # spec_cars = db.session.query(CarsModel).filter(CarsModel.model.like('%' + searchform.model.data + "%"))
-        # spec_cars = db.session.query(CarsModel).filter(CarsModel.make.like('%' + model + "%"))
-        spec_cars = db.session.query(CarsModel).filter(CarsModel.model == model )
+        spec_cars = db.session.query(CarsModel).filter(model==model).all()
 
         if cars is not None and spec_cars is None:
             for car in cars:
-                results.append(car)
-            return jsonify(results)
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            print(jsonify(results))
             
         
         elif (cars is None and spec_cars is not None):
             for car in spec_cars:
-                results.append(car)
-            return jsonify(results)
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            print(jsonify(results))
         
-        # elif cars is not None and spec_cars is not None:
-        #     for car in cars:
-        #         results.append(car)
-        #     for car in spec_cars:
-        #         results.append(car)
-        #     return jsonify(results)
+        elif cars is not None and spec_cars is not None:
+            for car in cars:
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            for car in spec_cars:
+                fcar = {
+                    "id": car.id,
+                    "description": car.description,
+                    "year": car.year,
+                    "make": car.make,
+                    "model": car.model,
+                    "colour": car.color,
+                    "transmission": car.transmission,
+                    "car_type": car.car_type,
+                    "price": car.price,
+                    "photo": car.photo,
+                    "user_id": car.user_id
+                }
+                results.append(fcar)
+            return jsonify(results)
         
     # return jsonify_errors(form_errors(searchform))
 

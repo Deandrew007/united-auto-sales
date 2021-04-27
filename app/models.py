@@ -9,7 +9,7 @@ class CarsModel(db.Model):
     description = db.Column(db.String(255))
     make = db.Column(db.String(160))
     model = db.Column(db.String(160))
-    colour = db.Column(db.String(160))
+    color = db.Column(db.String(160))
     year = db.Column(db.String(160))
     transmission = db.Column(db.String(160))
     car_type = db.Column(db.String(160))
@@ -25,7 +25,7 @@ class CarsModel(db.Model):
         self.description = description
         self.make = make
         self.model = model
-        self.colour = color
+        self.color = color
         self.year = year
         self.transmission = transmission
         self.car_type = car_type

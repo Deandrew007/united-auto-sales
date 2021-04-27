@@ -481,7 +481,7 @@ const Explore = {
         // params:{"make":make, "model":model}
       })
       .then(function(response){
-        console.log(response);
+        console.log(response.json());
         // response = response.json();
         // data = response.json();
         // this.results =data;
