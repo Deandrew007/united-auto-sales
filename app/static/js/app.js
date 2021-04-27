@@ -103,7 +103,7 @@ app.component('app-footer', {
 // Define Routes
 const routes = [
   { path: "/", component: Home },
-  { path: '/register', component: Register },
+  { path: '/register', component: Register }
   { path: '/login', component: Login },
   { path: '/logout', component: Logout },
   { path: "/explore", component: UserProfile},
