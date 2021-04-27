@@ -464,15 +464,12 @@ const Explore = {
       
       fetch("/api/search?"+ new URLSearchParams({ make:make1,model:model1 }),{
         method:'GET',
-        // body: form_data
-        // headers: 
-        // params:{"make":make, "model":model}
       })
       .then(function(response){
         return response.json();
       })
       .then(function(json){
-        // console.log(json);
+        console.log(json);
         // return json;
         const html = json.map(function(cars){
           return `
@@ -483,7 +480,8 @@ const Explore = {
                       <div class="card-body">
                           <h4 class="card-title">Car Make is ${cars.make} and Car Model is ${cars.model}</h4>
                           <p class="card-text"> ${cars.description} </p>
-                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                          <a href="/cars/:${cars.id}" @click="$router.push('/cars/:${cars.id}')" class="btn btn-primary">Go somewhere</a>
+                          
                       </div>
                   </div>
               
@@ -493,7 +491,7 @@ const Explore = {
           `;
         })
         .join("");
-        console.log(html);
+        // console.log(html);
         document.querySelector('#results').insertAdjacentHTML("afterend",html);
       })
       .catch(function(error){
@@ -501,14 +499,7 @@ const Explore = {
       });
     }
   
-    },
-    data : function(){
-      return{
-        results:[]
-      }
-
-    }
-  
+  }  
 
 };
 
